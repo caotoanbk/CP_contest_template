@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 //update include path if have error
-#include "../lib/testlib.h"
-#include "../lib/debug2.h"
+#include "../shared/lib/testlib.h"
+#include "../shared/lib/debug2.h"
 
 using namespace std;
 #define F_OR(i, a, b, s) for (int i=(a); (s)>0?i<(b):i>(b); i+=(s))
@@ -19,7 +19,7 @@ const string NAME = "A";
 //Directory have input.txt, output.txt, ans.txt
 //Normal program using input.txt as cin, output.txt as cout
 //Brutforce program using input.txt as cin, ans.txt as cout
-const string dirname = "..\\";
+const string dirname = "..\\shared\\";
 //Number of test
 const int testcount = 100;
 //Max of testcase each test
@@ -28,7 +28,7 @@ const int MAX_TC = 10;
 const int testcase = rnd.wnext(1,MAX_TC,3);
 
 bool writeTest(int test) {
-    FILE* fp = freopen("../input.txt", "w", stdout);
+    FILE* fp = freopen("../shared/input.txt", "w", stdout);
     int tc = testcase;
     if(tc != 0) {
         println(tc);
@@ -45,10 +45,10 @@ bool writeTest(int test) {
     fclose(fp);
 
     //call .exe process
-    system((NAME + ".exe").c_str());
-    system((NAME + "_bf.exe").c_str());
+    system("solution.exe");
+    system("brute_force.exe");
     //output of stress test
-    freopen("../stress-test-result.txt", "w", stdout);
+    freopen("../shared/stress-test-result.txt", "w", stdout);
     //compare result
     if (system(("fc /w " + dirname + "output.txt " + dirname + "ans.txt").c_str()) != 0)
     {

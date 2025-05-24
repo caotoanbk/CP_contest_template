@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 #ifdef ON_PC
-    #include "../lib/debug2.h"
+    #include "../shared/lib/debug2.h"
 #else
     #define dbg(...) 
     #define dbgArr(...)
@@ -40,9 +40,9 @@ int32_t main() {
     cin.tie(0);
     cout.tie(0);
     #ifdef ON_PC
-        freopen("../input.txt", "r", stdin);
-        freopen("../ans.txt", "w", stdout);
-        //freopen("d:/CP/error.txt", "w", stderr);
+        freopen("../shared/input.txt", "r", stdin);
+        freopen("../shared/output.txt", "w", stdout);
+        //freopen("../shared/error.txt", "w", stderr);
         clock_t start, end;
         start = clock();
     #endif // ON_PC

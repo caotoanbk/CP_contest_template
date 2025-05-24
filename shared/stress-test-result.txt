@@ -1,0 +1,4 @@
+Comparing files ..\SHARED\output.txt and ..\SHARED\ANS.TXT
+FC: no differences encountered
+
+Test 100: CORRECT!
