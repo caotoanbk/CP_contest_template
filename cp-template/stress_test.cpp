@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-//update include path if have error
 #include "../shared/lib/testlib.h"
 #include "../shared/lib/debug2.h"
 
