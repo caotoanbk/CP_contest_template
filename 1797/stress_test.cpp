@@ -32,12 +32,30 @@ const int testcase = rnd.wnext(1,MAX_TC,3); //random number of testcase
 
 bool writeTest(int test) {
     FILE* fp = freopen("../shared/input.txt", "w", stdout);
-    int tc = testcase;
+    int tc = 0;
     if(tc != 0) {
         println(tc);
     }else tc++;
     for(int i=0; i<tc; i++){
-        println(rnd.next(1, 10));
+        int n = rnd.next(3, 5);
+        println(n);
+        vector<int> x_vals={0, 1};
+        while(sz(x_vals) < n){
+            x_vals.pb(rnd.next(0,1));
+        }
+        shuffle(all(x_vals));
+        set<int> used_y;
+        vt<int> y_vals;
+        while(sz(y_vals) < n){
+            int y = rnd.next(0, 10);
+            if(!used_y.count(y)){
+                used_y.insert(y);
+                y_vals.pb(y);
+            }
+        }
+        FOR(i, n){
+            println(x_vals[i], y_vals[i]);
+        }
         //println(rnd.wnext(1, 1000000, opt<int>(1)));
         //println(rnd.next("[a-zA-Z0-9]{1,1000}"))
         //println(rnd.next("[a-zA-Z0-9]{1,%d}", length));

@@ -5,8 +5,8 @@ using namespace std;
 #else
     #define dbg(...) 
     #define dbgArr(...)
-#endif
-
+    #endif
+    
 #define int int64_t
 typedef pair<int,int> pii;
 #define ll long long
@@ -32,7 +32,36 @@ typedef pair<int,int> pii;
 #define EACH(x, a) for (auto& x: a)
 
 
+int n;
+vt<pii> cows;
 void solve(){
+    cin>>n;
+    cows.resize(n);
+    EACH(c, cows){
+        cin >> c.se >> c.fi;
+    }
+    sort(all(cows));
+    dbg(cows);
+
+    vt<int> d(n+1,0);
+
+    int ans = 0;
+    unordered_map<int, int> mp;
+    mp[0] = 0;
+    FOR(i,1, n+1){
+        d[i] = d[i-1];
+        if(cows[i-1].se == 0) d[i]++;
+        else d[i]--;
+        if(mp.count(d[i])){
+            ans = max(ans, cows[i-1].fi - cows[mp[d[i]]].fi);
+            // dbg(i, d[i], cows[i].fi, cows[mp[d[i]]+1].fi, ans);
+        }else{
+            mp[d[i]] = i;
+        }
+
+
+    }
+    cout << ans << endl;
 }
 
 int32_t main() {
@@ -41,14 +70,14 @@ int32_t main() {
     cout.tie(0);
     #ifdef ON_PC
         freopen("../shared/input.txt", "r", stdin);
-        freopen("../shared/ans.txt", "w", stdout);
+        freopen("../shared/output.txt", "w", stdout);
         //freopen("../shared/error.txt", "w", stderr);
         clock_t start, end;
         start = clock();
     #endif // ON_PC
 
-    int t; 
-    cin >> t;
+    int t=1; 
+    // cin >> t;
     while(t--){
         solve();
     }

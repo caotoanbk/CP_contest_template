@@ -32,7 +32,34 @@ typedef pair<int,int> pii;
 #define EACH(x, a) for (auto& x: a)
 
 
+int n,k;
+vt<pii> v;
+vt<int> vis; 
+
+void countJumps(int cur_pos, int jump_to, int &total_jumps) {
+    int rightPos = v[cur_pos].se;
+    FOR(i, cur_pos+1, jump_to+1) {
+        if(v[i].fi > rightPos){
+            total_jumps += v[i].fi - rightPos;
+            rightPos = v[i].se;
+        }else{
+            rightPos = max(rightPos, v[i].se);
+        }
+    }
+}
+
 void solve(){
+    int total_jumps = 0;
+
+    int cur_pos = 0;
+    FOR(i, k){
+        //Jump to the next position vis[i]
+        int jump_to = vis[i];
+        if(jump_to < cur_pos) swap(cur_pos, jump_to);
+        countJumps(cur_pos, jump_to, total_jumps);
+        cur_pos = vis[i];
+    }
+    cout << total_jumps << endl;
 }
 
 int32_t main() {
@@ -41,15 +68,25 @@ int32_t main() {
     cout.tie(0);
     #ifdef ON_PC
         freopen("../shared/input.txt", "r", stdin);
-        freopen("../shared/ans.txt", "w", stdout);
+        freopen("../shared/output.txt", "w", stdout);
         //freopen("../shared/error.txt", "w", stderr);
         clock_t start, end;
         start = clock();
     #endif // ON_PC
 
-    int t; 
-    cin >> t;
+    int t=1; 
+    // cin >> t;
     while(t--){
+        cin>>n>>k;
+        FOR(i,n){
+            int x,y;
+            cin>>x>>y;
+            v.pb({x,y});
+        }
+        FOR(i, k){
+            int x; cin>>x;
+            vis.pb(x-1);
+        }
         solve();
     }
 

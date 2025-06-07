@@ -7,7 +7,6 @@ using namespace std;
     #define dbgArr(...)
 #endif
 
-#define int int64_t
 typedef pair<int,int> pii;
 #define ll long long
 #define ld long double
@@ -31,6 +30,7 @@ typedef pair<int,int> pii;
 #define FOR(...) F_ORC(__VA_ARGS__)(__VA_ARGS__)
 #define EACH(x, a) for (auto& x: a)
 
+#define int int64_t
 
 void solve(){
 }
@@ -41,7 +41,7 @@ int32_t main() {
     cout.tie(0);
     #ifdef ON_PC
         freopen("../shared/input.txt", "r", stdin);
-        freopen("../shared/ans.txt", "w", stdout);
+        freopen("../shared/output.txt", "w", stdout);
         //freopen("../shared/error.txt", "w", stderr);
         clock_t start, end;
         start = clock();

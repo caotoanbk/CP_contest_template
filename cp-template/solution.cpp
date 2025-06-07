@@ -7,6 +7,7 @@ using namespace std;
     #define dbgArr(...)
 #endif
 
+#define int int64_t
 typedef pair<int,int> pii;
 #define ll long long
 #define ld long double
@@ -30,7 +31,6 @@ typedef pair<int,int> pii;
 #define FOR(...) F_ORC(__VA_ARGS__)(__VA_ARGS__)
 #define EACH(x, a) for (auto& x: a)
 
-#define int int64_t
 
 void solve(){
 }

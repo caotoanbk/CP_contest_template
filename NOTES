@@ -1,0 +1,11 @@
+## NAME PARAMETER EXAMPLE
+Interval(bieu dien range)
+Visist(thu tu tham, jump...)
+s,e(start, end)
+
+
+
+## cin for pair
+  for (auto &[s, e]: v) {
+        cin >> s >> e;
+    }

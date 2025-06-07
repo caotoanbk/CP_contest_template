@@ -13,19 +13,6 @@ using namespace std;
 #define FOR(...) F_ORC(__VA_ARGS__)(__VA_ARGS__)
 #define EACH(x, a) for (auto& x: a)
 
-typedef pair<int,int> pii;
-#define ll long long
-#define ld long double
-#define ar array
-#define vt vector
-#define pb push_back
-#define mp make_pair
-#define fi first
-#define se second
-#define all(c) (c).begin(), (c).end()
-#define sz(x) (int)(x).size()
-#define endl '\n'
-
 const int testcount = 100; //number of test
 const int MAX_TC = 10; //max number of testcase each test
 const int testcase = rnd.wnext(1,MAX_TC,3); //random number of testcase

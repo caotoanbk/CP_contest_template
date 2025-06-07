@@ -6,8 +6,8 @@ using namespace std;
     #define dbg(...) 
     #define dbgArr(...)
 #endif
-
 #define int int64_t
+
 typedef pair<int,int> pii;
 #define ll long long
 #define ld long double
@@ -32,7 +32,29 @@ typedef pair<int,int> pii;
 #define EACH(x, a) for (auto& x: a)
 
 
+int n;
+vt<pii> cows;
 void solve(){
+    cin>>n;
+    cows.resize(n);
+    EACH(c, cows){
+        cin >> c.se >> c.fi;
+    }
+    sort(all(cows));
+    int ans = 0;
+    FOR(i, 0, n){
+        FOR(j, i+1, n){
+            int d = 0;
+            FOR(k, i, j+1){
+                if(cows[k].se == 0) d++;
+                else d--;
+            }
+            if(d == 0){
+                ans = max(ans, cows[j].fi - cows[i].fi);
+            }
+        }
+    }
+    cout << ans << endl;
 }
 
 int32_t main() {
@@ -47,8 +69,8 @@ int32_t main() {
         start = clock();
     #endif // ON_PC
 
-    int t; 
-    cin >> t;
+    int t=1; 
+    // cin >> t;
     while(t--){
         solve();
     }
