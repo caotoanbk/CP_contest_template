@@ -59,3 +59,20 @@ int main() {
         cout << "(" << p.first << ", " << p.second << ") ";
     }
 }
+
+
+
+// Check if i-th bit is set
+bool isSet = (mask & (1 << i));
+
+// Set i-th bit
+mask |= (1 << i);
+
+// Clear i-th bit
+mask &= ~(1 << i);
+
+// Toggle i-th bit
+mask ^= (1 << i);
+
+// Count set bits
+int count = __builtin_popcount(mask); // GCC / Clang

@@ -20,6 +20,8 @@
         "regex": "cpp",
         "valarray": "cpp",
         "random": "cpp",
-        "numbers": "cpp"
+        "numbers": "cpp",
+        "chrono": "cpp",
+        "limits": "cpp"
     }
 }
