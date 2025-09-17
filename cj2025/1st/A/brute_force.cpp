@@ -31,47 +31,8 @@ typedef pair<int,int> pii;
 #define FOR(...) F_ORC(__VA_ARGS__)(__VA_ARGS__)
 #define EACH(x, a) for (auto& x: a)
 
-int n;
-vt<vt<int>> adj;
-vt<int> subtree_size;
-void dfs(int u, int p) {
-    subtree_size[u] = 1;
-    for (int v : adj[u]) {
-        if (v == p) continue;
-        dfs(v, u);
-        subtree_size[u] += subtree_size[v];
-    }
-}
 
-void solve() {
-    cin >> n;
-    adj.assign(n, vector<int>());
-    subtree_size.assign(n, 0);
-
-    vector<pair<int, int>> edges;
-
-    for (int i = 0; i < n - 1; ++i) {
-        int u, v; cin >> u >> v;
-        --u; --v;
-        adj[u].push_back(v);
-        adj[v].push_back(u);
-        edges.emplace_back(u, v);
-    }
-
-    dfs(0, -1);
-
-    vector<int> result(n, n-1); // each node has n - 1 buses that start/end at it
-
-    for (auto [u, v] : edges) {
-        int a = min(subtree_size[u], subtree_size[v]);
-        int b = n - a;
-        int add = a * b;
-        result[u] += add;
-        result[v] += add;
-    }
-
-    for (int i = 0; i < n; ++i)
-        cout << result[i] << '\n';
+void solve(){
 }
 
 int32_t main() {
@@ -80,14 +41,14 @@ int32_t main() {
     cout.tie(0);
     #ifdef ON_PC
         freopen("../shared/input.txt", "r", stdin);
-        freopen("../shared/output.txt", "w", stdout);
+        freopen("../shared/ans.txt", "w", stdout);
         //freopen("../shared/error.txt", "w", stderr);
         clock_t start, end;
         start = clock();
     #endif // ON_PC
 
-    int t=1; 
-    // cin >> t;
+    int t; 
+    cin >> t;
     while(t--){
         solve();
     }
