@@ -3,7 +3,7 @@ using namespace std;
 
 // ========== Debug ==========
 #ifdef ON_PC
-  #include "../shared/lib/debug2.h"
+  #include "../../../Share/lib/debug2.h"
 #else
   #define dbg(...)
   #define dbgArr(...)
@@ -19,7 +19,8 @@ struct FastIO {
 
 // ========== Aliases & Macros ==========
 using i64 = long long;
-using pii = pair<i64,i64>;
+using pii = pair<int,int>;
+using pll = pair<i64,i64>;
 template<typename T> using vt = vector<T>;
 
 #define pb push_back
@@ -50,8 +51,8 @@ void solve(){
 // ========== Main ==========
 int main() {
     #ifdef ON_PC
-      freopen("../shared/input.txt","r",stdin);
-      freopen("../shared/output.txt","w",stdout);
+      freopen("../../../Share/input.txt","r",stdin);
+      freopen("../../../Share/output.txt","w",stdout);
       clock_t start = clock();
     #endif
 
