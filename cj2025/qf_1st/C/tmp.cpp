@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include "../../../Share/lib/testlib.h"
 using namespace std;
 
 // ========== Debug ==========
@@ -286,8 +287,8 @@ bool solveGreedy(int k, ll ox, ll oy, array<ll,4> cnt, pair<ll,ll>& res) {
         if (finalHole == -1) return false;
         
         if (finalHole == 0) res = {ox, oy};
-        else if (finalHole == 1) res = {ox, oy+1};
-        else if (finalHole == 2) res = {ox+1, oy};
+        else if (finalHole == 1) res = {ox + 1, oy};
+        else if (finalHole == 2) res = {ox, oy + 1};
         else res = {ox + 1, oy + 1};
         
         return true;
@@ -366,8 +367,8 @@ bool solveGreedy(int k, ll ox, ll oy, array<ll,4> cnt, pair<ll,ll>& res) {
                 
                 validNOx = ox;
                 validNOy = oy;
-                if (hole == 1) validNOy += mid;
-                else if (hole == 2) validNOx += mid;
+                if (hole == 1) validNOx += mid;
+                else if (hole == 2) validNOy += mid;
                 else if (hole == 3) {
                     validNOx += mid;
                     validNOy += mid;
@@ -379,8 +380,8 @@ bool solveGreedy(int k, ll ox, ll oy, array<ll,4> cnt, pair<ll,ll>& res) {
             
             validNOx = ox;
             validNOy = oy;
-            if (hole == 1) validNOy += mid;
-            else if (hole == 2) validNOx += mid;
+            if (hole == 1) validNOx += mid;
+            else if (hole == 2) validNOy += mid;
             else if (hole == 3) {
                 validNOx += mid;
                 validNOy += mid;
@@ -415,41 +416,99 @@ void precompute() {
       }
     }
 }
+// sinh cnt hợp lệ đệ quy
+array<ll,4> genCnt(int k) {
+    if(k==1){
+        array<ll,4> base = {0,0,0,1};
+        for(int i=3;i>0;i--){
+          int j = rnd.next(0,i); // dùng random_t
+          swap(base[i], base[j]);
+      }
+        return base;
+    }
+    int midHole = rnd.next(0,3); // quadrant chứa hole
+    array<ll,4> cnt = {0,0,0,0};
+    cnt[trominoHoleMap[midHole]]++; // miếng trung tâm
+    for(int child=0; child<4; child++){
+        int childHole = (child==midHole)? rnd.next(0,3) : trominoHoleMap[child];
+        array<ll,4> sub = genCnt(k-1);
+        for(int q=0;q<4;q++) cnt[q]+=sub[q];
+    }
+    return cnt;
+}
 void solve() {
-    array<ll,4> cnt;
-    dbg("hello");
-    cin >> k >> cnt[0] >> cnt[1] >> cnt[2] >> cnt[3];
+    // array<ll,4> cnt;
+    // cin >> k >> cnt[0] >> cnt[1] >> cnt[2] >> cnt[3];
     
-    dbg(cnt);
     precompute();
-    
-    ll gridSize = 1LL << k;
-    ll totalCells = gridSize * gridSize;
-    ll expectedTrominos = (totalCells - 1) / 3;
-    ll actualTotal = cnt[0] + cnt[1] + cnt[2] + cnt[3];
-    if (actualTotal != expectedTrominos) {
-        cout << -1 << " " << -1 << endl;
-        return;
+    const int TESTCOUNT = 100;
+    REP(i, TESTCOUNT){
+        // Sinh k và cnt hợp lệ
+        k = rnd.wnext(1, 10, 2);
+        array<ll,4> trominoCnt = genCnt(k);
+
+        // Tìm hole từ cnt
+        pair<ll,ll> hole;
+        solveGreedy(k, 0, 0, trominoCnt, hole);
+
+        if(hole == make_pair(-1LL,-1LL)){
+            cout << "TEST #" << i+1 << " FAIL: no hole found!\n";
+            cout << "k=" << k << ", trominoCnt: ";
+            for(auto v:trominoCnt) cout << v << " ";
+            cout << "\n";
+            break;
+        }
+
+        // Tính lại cnt từ hole
+        array<ll,4> computedCnt = countTromnios(k, hole.second, hole.first);
+
+        cout << "TEST #" << i+1 << ", k=" << k << "\n";
+        cout << "Expected cnt: ";
+        for(auto v:trominoCnt) cout << v << " ";
+        cout << "\nComputed cnt: ";
+        for(auto v:computedCnt) cout << v << " ";
+        cout << "\nHole: (" << hole.first << "," << hole.second << ")\n";
+
+        if(computedCnt != trominoCnt){
+            cout << "==> FAIL\n";
+            break;
+        } else {
+            cout << "==> CORRECT\n";
+        }
+        cout << "------------------------\n";
     }
+
+    return;
     
-    pair<ll,ll> result;
-    if (solveGreedy(k, 0, 0, cnt, result)) {
-        cout << result.first << " " << result.second << endl;
-    } else {
-        cout << -1 << " " << -1 << endl;
-    }
+    // ll gridSize = 1LL << k;
+    // ll totalCells = gridSize * gridSize;
+    // ll expectedTrominos = (totalCells - 1) / 3;
+    // ll actualTotal = cnt[0] + cnt[1] + cnt[2] + cnt[3];
+    
+    // if (actualTotal != expectedTrominos) {
+    //     cout << -1 << " " << -1 << endl;
+    //     return;
+    // }
+    
+    // pair<ll,ll> result;
+    // if (solveGreedy(k, 0, 0, cnt, result)) {
+    //     cout << result.se << " " << result.fi << endl;
+    // } else {
+    //     cout << -1 << " " << -1 << endl;
+    // }
 }
 
 // ========== Main ==========
-int main() {
-    #ifdef ON_PC
+int main(int argc, char *argv[]) {
+  #ifdef ON_PC
+      registerGen(argc, argv, 1);
       freopen("../../../Share/input.txt","r",stdin);
       freopen("../../../Share/output.txt","w",stdout);
       clock_t start = clock();
     #endif
 
     int T = 1;
-    cin >> T;
+    // cin >> T;
     while(T--){
         solve();
     }

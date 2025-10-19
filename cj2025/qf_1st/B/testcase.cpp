@@ -1,13 +1,10 @@
 #include <bits/stdc++.h>
-//update include path if have error
 #include "../../../Share/lib/debug2.h"
 #include "../../../Share/lib/testlib.h"
 
-using namespace std;
-#define FOR(i,a,b) for(ll i=(a); i<(b); ++i)
+#define FOR(i,a,b) for(int i=(a); i<(b); ++i)
 #define REP(i,n) FOR(i,0,n)
-#define PER(i,n) for(ll i=(n)-1; i>=0; --i)
-
+#define PER(i,n) for(int i=(n)-1; i>=0; --i)
 
 typedef pair<int,int> pii;
 #define ll long long
@@ -20,27 +17,25 @@ typedef pair<int,int> pii;
 #define se second
 #define all(c) (c).begin(), (c).end()
 #define sz(x) (int)(x).size()
-#define nl '\n'
+#define endl '\n'
 
-void writeTest() {
-    FILE* fp = freopen("../../../Share/input.txt", "w", stdout);
-    int tc = 0;
+const int testcount = 100; //number of test
+const int MAX_TC = 10; //max number of testcase each test
+const int testcase = rnd.wnext(1,MAX_TC,3); //random number of testcase
+
+bool writeTest(int test) {
+    FILE* fp = freopen("../../../Share/input.txt","w",stdout);
+    int tc = testcase;
     if(tc != 0) {
         println(tc);
     }else tc++;
     for(int i=0; i<tc; i++){
-        //--CODE START HERE---
-        int n = 5*10000;
-        println(n);
-        FOR(i,n){
-            cout << rnd.next(-100000000, 100000000) << " ";
-        }
-        cout << endl;
-        int m = 5*100000;
-        println(m);
-        FOR(i,m){
-            cout << rnd.next(1,n) << " " << rnd.next((int)-1e13, (int)1e13) << endl;
-        }
+        int n = rnd.next(1, 3);
+        int k= rnd.next(1, 3);
+        println(n,k);
+
+        
+
         //println(rnd.wnext(1, 1000000, opt<int>(1)));
         //println(rnd.next("[a-zA-Z0-9]{1,1000}"))
         //println(rnd.next("[a-zA-Z0-9]{1,%d}", length));
@@ -48,10 +43,17 @@ void writeTest() {
 
     }
     fclose(fp);
+
+    system("solution.exe"); // run solution
+    this_thread::sleep_for(chrono::milliseconds(2000));
+    
+    return true;
 }
 
 int main(int argc, char *argv[]) {
     registerGen(argc, argv, 1);
 
-    writeTest();
+    for (int i = 0; i < testcount; i++){
+        writeTest(i);
+    }
 }

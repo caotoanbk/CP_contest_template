@@ -18,9 +18,9 @@ struct FastIO {
 } fastio; // khởi tạo trước main
 
 // ========== Aliases & Macros ==========
-using ll = long long;
+using i64 = long long;
 using pii = pair<int,int>;
-using pll = pair<ll,ll>;
+using pll = pair<i64,i64>;
 template<typename T> using vt = vector<T>;
 
 #define pb push_back
@@ -28,13 +28,13 @@ template<typename T> using vt = vector<T>;
 #define fi first
 #define se second
 #define all(x) (x).begin(), (x).end()
-#define sz(x) ((ll)(x).size())
+#define sz(x) ((i64)(x).size())
 #define nl '\n'
 
 // Loop macros
-#define FOR(i,a,b) for(ll i=(a); i<(b); ++i)
+#define FOR(i,a,b) for(i64 i=(a); i<(b); ++i)
 #define REP(i,n) FOR(i,0,n)
-#define PER(i,n) for(ll i=(n)-1; i>=0; --i)
+#define PER(i,n) for(i64 i=(n)-1; i>=0; --i)
 
 // ========== Helpers (optional) ==========
 template<class T> inline bool chmin(T& a,const T& b){if(b<a){a=b;return true;}return false;}
@@ -42,14 +42,17 @@ template<class T> inline bool chmax(T& a,const T& b){if(b>a){a=b;return true;}re
 
 // ========== Solve function ==========
 void solve(){
-  
+    // TODO: implement per test case
+    // Example:
+    // i64 n; cin >> n;
+    // ...
 }
 
 // ========== Main ==========
 int main() {
     #ifdef ON_PC
       freopen("../../../Share/input.txt","r",stdin);
-      freopen("../../../Share/ans.txt","w",stdout);
+      freopen("../../../Share/output.txt","w",stdout);
       clock_t start = clock();
     #endif
 

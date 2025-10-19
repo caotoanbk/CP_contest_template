@@ -1,4 +1,4 @@
-Comparing files ..\SHARED\output.txt and ..\SHARED\ANS.TXT
+Comparing files ..\..\..\SHARE\output.txt and ..\..\..\SHARE\ANS.TXT
 FC: no differences encountered
 
-Test 100: CORRECT!
+Test 1000: CORRECT!

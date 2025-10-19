@@ -1,11 +1,17 @@
 #include <bits/stdc++.h>
-#include "../../../Share/lib/debug2.h"
-#include "../../../Share/lib/testlib.h"
+#include "../shared/lib/testlib.h"
+#include "../shared/lib/debug2.h"
 
 using namespace std;
-#define FOR(i,a,b) for(int i=(a); i<(b); ++i)
-#define REP(i,n) FOR(i,0,n)
-#define PER(i,n) for(int i=(n)-1; i>=0; --i)
+#define F_OR(i, a, b, s) for (int i=(a); (s)>0?i<(b):i>(b); i+=(s))
+#define F_OR1(e) F_OR(i, 0, e, 1)
+#define F_OR2(i, e) F_OR(i, 0, e, 1)
+#define F_OR3(i, b, e) F_OR(i, b, e, 1)
+#define F_OR4(i, b, e, s) F_OR(i, b, e, s)
+#define GET5(a, b, c, d, e, ...) e
+#define F_ORC(...) GET5(__VA_ARGS__, F_OR4, F_OR3, F_OR2, F_OR1)
+#define FOR(...) F_ORC(__VA_ARGS__)(__VA_ARGS__)
+#define EACH(x, a) for (auto& x: a)
 
 typedef pair<int,int> pii;
 #define ll long long
@@ -18,14 +24,14 @@ typedef pair<int,int> pii;
 #define se second
 #define all(c) (c).begin(), (c).end()
 #define sz(x) (int)(x).size()
-#define nl '\n'
+#define endl '\n'
 
 const int testcount = 100; //number of test
 const int MAX_TC = 10; //max number of testcase each test
 const int testcase = rnd.wnext(1,MAX_TC,3); //random number of testcase
 
 bool writeTest(int test) {
-    FILE* fp = freopen("../../../Share/input.txt", "w", stdout);
+    FILE* fp = freopen("../shared/input.txt", "w", stdout);
     int tc = testcase;
     if(tc != 0) {
         println(tc);
@@ -42,8 +48,8 @@ bool writeTest(int test) {
 
     system("solution.exe"); // run solution
     system("brute_force.exe"); // run brute force
-    freopen("../../../Share/stress-test-result.txt", "w", stdout); // redirect output to a file
-    if (system("fc /w ..\\..\\..\\Share\\output.txt ..\\..\\..\\Share\\ans.txt") != 0) //compare output files
+    freopen("../shared/stress-test-result.txt", "w", stdout); // redirect output to a file
+    if (system("fc /w ..\\shared\\output.txt ..\\shared\\ans.txt") != 0) //compare output files
     {
         cout << "Test " << test << ": WRONG!\n";
         return false;

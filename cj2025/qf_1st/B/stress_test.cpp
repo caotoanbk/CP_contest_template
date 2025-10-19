@@ -20,18 +20,44 @@ typedef pair<int,int> pii;
 #define sz(x) (int)(x).size()
 #define nl '\n'
 
-const int testcount = 100; //number of test
+const int testcount = 1000; //number of test
 const int MAX_TC = 10; //max number of testcase each test
 const int testcase = rnd.wnext(1,MAX_TC,3); //random number of testcase
 
 bool writeTest(int test) {
     FILE* fp = freopen("../../../Share/input.txt", "w", stdout);
-    int tc = testcase;
+    int tc = 0;
     if(tc != 0) {
         println(tc);
     }else tc++;
+    const int MAX_N = 5;
+    const int MAX_TIME = 10;
+    const int MAX_P = 100;
+    const int MAX_D = 10;
     for(int i=0; i<tc; i++){
-        println(rnd.next(1, 10));
+        int n = rnd.next(1, MAX_N);
+        int k= rnd.next(1, n);
+        println(n,k);
+       FOR(j, 0, n) {
+           int s = rnd.next(1, MAX_TIME/2);
+           int e = rnd.next(s + 1, MAX_TIME);  // e > s
+           int d = rnd.next(1, MAX_D);
+           
+           // p > (e - s) * d
+           int min_p = (e - s) * d + 1;
+           
+        //    dbg(s,e,d,min_p);
+        int p;
+        if(min_p > MAX_P) {
+            p = rnd.next(min_p, min_p + 10);     // sinh p >= min_p
+        }else{
+            p = rnd.next(min_p, MAX_P);     // sinh p >= min_p
+        }
+
+            // In ra hoặc xử lý tiếp
+            println(s, e, p, d);
+        }
+        // println(rnd.next(1, 10));
         //println(rnd.wnext(1, 1000000, opt<int>(1)));
         //println(rnd.next("[a-zA-Z0-9]{1,1000}"))
         //println(rnd.next("[a-zA-Z0-9]{1,%d}", length));
@@ -41,7 +67,9 @@ bool writeTest(int test) {
     fclose(fp);
 
     system("solution.exe"); // run solution
+    this_thread::sleep_for(chrono::milliseconds(100));
     system("brute_force.exe"); // run brute force
+    this_thread::sleep_for(chrono::milliseconds(100));
     freopen("../../../Share/stress-test-result.txt", "w", stdout); // redirect output to a file
     if (system("fc /w ..\\..\\..\\Share\\output.txt ..\\..\\..\\Share\\ans.txt") != 0) //compare output files
     {
@@ -49,6 +77,7 @@ bool writeTest(int test) {
         return false;
     }
     cout << "Test " << test << ": CORRECT!\n";
+    this_thread::sleep_for(chrono::milliseconds(100));
     
     return true;
 }

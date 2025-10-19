@@ -22,6 +22,12 @@
         "random": "cpp",
         "numbers": "cpp",
         "chrono": "cpp",
-        "limits": "cpp"
+        "limits": "cpp",
+        "xstring": "cpp",
+        "algorithm": "cpp",
+        "utility": "cpp",
+        "xutility": "cpp",
+        "ios": "cpp",
+        "xiosbase": "cpp"
     }
 }
