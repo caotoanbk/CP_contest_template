@@ -3,19 +3,11 @@ using namespace std;
 
 // ========== Debug ==========
 #ifdef ON_PC
-  #include "../../../Share/lib/debug2.h"
+  #include "../../Share/lib/debug2.h"
 #else
   #define dbg(...)
   #define dbgArr(...)
 #endif
-
-// ========== Fast IO initializer ==========
-struct FastIO {
-    FastIO() {
-        ios::sync_with_stdio(false);
-        cin.tie(nullptr);
-    }
-} fastio; // khởi tạo trước main
 
 // ========== Aliases & Macros ==========
 using ll = long long;
@@ -50,8 +42,53 @@ void signalHandler(int signum) {
 }
 
 // ========== Solve function ==========
+int n,m;
+vt<vt<int>> adj;
+vt<bool> special;
+vt<int> ans;
+
+void dfs(int node, int parent, int cnt, int& res){
+  if(cnt == 1){
+    res++;
+  }
+  for(auto&x : adj[node]){
+    if(x != parent){
+      if(special[x]){
+        if(cnt+1 > 1) continue;
+        
+        dfs(x, node, cnt+1, res);
+        
+      }else{
+        dfs(x, node, cnt, res);
+      }
+    }
+  }
+}
+
 void solve(){
-  
+  cin >> n >> m; 
+  adj.assign(n+1, {});
+  special.assign(n+1, false);
+  ans.assign(n+1, 0);
+  REP(i,n-1){
+    int u,v; cin >> u >> v;
+    adj[u].pb(v);
+    adj[v].pb(u);
+  }
+  REP(i,m){
+    int u; cin >> u;
+    special[u] = true;
+  }
+ 
+  FOR(i,1,n+1){
+    int res = 0;
+    dfs(i,0, special[i]?1:0, res);
+    ans[i] = res;
+  }
+  FOR(i,1,n+1){
+    cout << ans[i]<< " ";
+  }
+  cout << '\n';
 }
 
 // ========== Main ==========
@@ -60,16 +97,25 @@ int main() {
     signal(SIGABRT, signalHandler);
     
     #ifdef ON_PC
-      freopen("../../../Share/input.txt","r",stdin);
-      freopen("../../../Share/output.txt","w",stdout);
+      FILE* f1 = freopen("d:\\C++\\CP\\Share\\input.txt","r",stdin);
+      FILE* f2 = freopen("d:\\C++\\CP\\Share\\output.txt","w",stdout);
+      if (!f1 || !f2) {
+        cerr << "Failed to open input/output file!\n";
+        return 1;
+     }
       clock_t start = clock();
     #endif
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
 
     int T = 1;
     cin >> T;
-    while(T--){
+    dbg(T);
+    FOR(i,0,T){
+        cout << "case " << i<<"\n";
         solve();
-    }
+        cout.flush();
+      }
 
     #ifdef ON_PC
       clock_t end = clock();

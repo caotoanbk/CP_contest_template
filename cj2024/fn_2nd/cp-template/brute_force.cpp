@@ -40,15 +40,6 @@ template<typename T> using vt = vector<T>;
 template<class T> inline bool chmin(T& a,const T& b){if(b<a){a=b;return true;}return false;}
 template<class T> inline bool chmax(T& a,const T& b){if(b>a){a=b;return true;}return false;}
 
-//======= SIGNAL HANDLER FOR DEBUGGING ======== 
-void signalHandler(int signum) {
-    cerr << "\nCaught signal: " << signum << endl;
-    // dbg(...); // add relevant variables to debug
-    if (signum == SIGSEGV) cerr << "Segmentation fault detected!\n";
-    else if (signum == SIGABRT) cerr << "Aborted!\n";
-    exit(signum);
-}
-
 // ========== Solve function ==========
 void solve(){
   
@@ -56,12 +47,9 @@ void solve(){
 
 // ========== Main ==========
 int main() {
-    signal(SIGSEGV, signalHandler);
-    signal(SIGABRT, signalHandler);
-    
     #ifdef ON_PC
       freopen("../../../Share/input.txt","r",stdin);
-      freopen("../../../Share/output.txt","w",stdout);
+      freopen("../../../Share/ans.txt","w",stdout);
       clock_t start = clock();
     #endif
 

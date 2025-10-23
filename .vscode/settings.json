@@ -28,6 +28,14 @@
         "utility": "cpp",
         "xutility": "cpp",
         "ios": "cpp",
-        "xiosbase": "cpp"
+        "xiosbase": "cpp",
+        "xlocale": "cpp",
+        "xhash": "cpp",
+        "xtree": "cpp",
+        "queue": "cpp",
+        "stack": "cpp",
+        "iosfwd": "cpp",
+        "functional": "cpp",
+        "system_error": "cpp"
     }
 }

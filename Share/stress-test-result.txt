@@ -1,4 +1,17 @@
 Comparing files ..\..\..\SHARE\output.txt and ..\..\..\SHARE\ANS.TXT
-FC: no differences encountered
+***** ..\..\..\SHARE\output.txt
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+***** ..\..\..\SHARE\ANS.TXT
+138
+*****
 
-Test 1000: CORRECT!
+Test 1: WRONG!
