@@ -4,6 +4,8 @@ using namespace std;
 // ========== Debug ==========
 #ifdef ON_PC
   #include "lib\debug2.h"
+  #define VEC(v, i) (v.at(i))
+  #define MAT(mat, i, j) (mat.at(i).at(j))
 #else
   #define dbg(...)
   #define dbgArr(...)
@@ -49,93 +51,60 @@ void signalHandler(int signum) {
     exit(signum);
 }
 
-const ll mod = (ll)(1e9)+7;
-
-
-ll powmod(ll a, ll b){
-  ll ans = 1;
-  a %= mod;
-  while(b){
-    if(b&1) ans =ans*a % mod;
-    a =a * a % mod;
-    b >>= 1;
-  }
-  return ans;
-}
-
-ll modinv(ll a){
-  return powmod(a, mod-2);
-}
-
-ll geo_sum(ll x, ll len){
-  if(len < 2) return 0;
-  if(x == 1) return (len-1)%mod;
-  ll first = (x%mod) * (x%mod) % mod;
-  ll num = (powmod(x, len-1)-1 + mod)%mod;
-  ll den = modinv(x-1);
-  return (first * num % mod) * den % mod;
-}
-
-
 // ========== Solve function ==========
-int n;
-vt<int> A;
-vt<int> r,l;
-unordered_map<int, int> freq, last;
-
 void solve(){
-  cin>>n; 
-  A.assign(n+1,0);
-  r.assign(n+1,0);
-  l.assign(n+1,0);
-  freq.clear();
-  last.clear();
-  FOR(i, 1,n+1) cin >> A[i];
-  int x = 0;
-  FOR(i,1,n+1){
-   while(x+1 <= n && freq[A[x+1]] == 0){
-    freq[A[++x]]++;
-   } 
-   r[i] = x;
-   freq[A[i]]--;
+  ll n, k, a, b;
+  cin >> n >> k >> a >> b;
+  
+  vt<ll> s(n);
+  ll total = 0;
+  ll count_ones = 0;
+  
+  REP(i, n){
+    cin >> s[i];
+    total += s[i];
+    if(s[i] == 1) count_ones++;
   }
-  // dbg(A);
-  // dbg(r);
-
-  int curL = 1;
-  FOR(i, 1, n+1){
-    if(last.count(A[i])){
-      curL =max(curL, last[A[i]] + 1);
+  
+  // Check if possible
+  if(total < k){
+    cout << -1 << nl;
+    return;
+  }
+  
+  // Already have enough unit sticks
+  if(count_ones >= k){
+    cout << 0 << nl;
+    return;
+  }
+  
+  // Need to cut: k - count_ones more unit sticks
+  ll needed = k - count_ones;
+  
+  // DP: dp[j] = minimum cost to get at least j unit sticks from cutting
+  vt<ll> dp(needed + 1, LLONG_MAX);
+  dp[0] = 0;
+  
+  REP(i, n){
+    if(s[i] >= 2){
+      ll L = s[i];
+      ll cost = a * (L - 1) * (L - 1) + b;
+      
+      // Update DP in reverse order (0/1 knapsack)
+      for(ll j = needed; j >= 0; --j){
+        if(dp[j] != LLONG_MAX){
+          ll next = min(needed, j + L);
+          chmin(dp[next], dp[j] + cost);
+        }
+      }
     }
-    l[i] = curL;
-    last[A[i]] = i;
-  }  
-
-
-
-  ll ans = 0;
-  FOR(i,1,n+1){
-    int len = r[i]-i+1;
-    ans = (ans+ geo_sum(i, len))%mod;
-
-    int y = l[i];
-    len = i-y+1;
-    ans = (ans+geo_sum(i, len))%mod;
-
   }
-
-  // ----- i-side -----
-    // for(int i=1;i<=n;i++){
-    //     int len = r[i] - i + 1;
-    //     ans = (ans + geo_sum(i, len)) % mod;
-    // }
-
-    // // ----- j-side -----
-    // for(int j=1;j<=n;j++){
-    //     int len = j - l[j] + 1;
-    //     ans = (ans + geo_sum(j, len)) % mod;
-    // }
-  cout << ans%mod << nl;
+  
+  if(dp[needed] == LLONG_MAX){
+    cout << -1 << nl;
+  } else {
+    cout << dp[needed] << nl;
+  }
 }
 
 // ========== Main ==========

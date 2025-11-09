@@ -4,18 +4,12 @@ using namespace std;
 // ========== Debug ==========
 #ifdef ON_PC
   #include "lib\debug2.h"
+  #define VEC(v, i) (v.at(i))
+  #define MAT(mat, i, j) (mat.at(i).at(j))
 #else
   #define dbg(...)
   #define dbgArr(...)
 #endif
-
-// ========== Fast IO initializer ==========
-struct FastIO {
-    FastIO() {
-        ios::sync_with_stdio(false);
-        cin.tie(nullptr);
-    }
-} fastio; // khởi tạo trước main
 
 // ========== Aliases & Macros ==========
 using ll = long long;
@@ -58,11 +52,13 @@ void solve(){
 int main() {
     signal(SIGSEGV, signalHandler);
     signal(SIGABRT, signalHandler);
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
     
     #ifdef ON_PC
-      #define SHARE_PATH "D:/C++/CP/Share/"
+      #define SHARE_PATH "D:/C++/CP/99.Share/"
       FILE* f1 = freopen(SHARE_PATH "input.txt","r",stdin);
-      FILE* f2 = freopen(SHARE_PATH "osutput.txt","w",stdout);
+      FILE* f2 = freopen(SHARE_PATH "output.txt","w",stdout);
       if(!f1){
         cerr<< "Error when open input"<<"\n";
         return 0;

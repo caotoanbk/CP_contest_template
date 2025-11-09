@@ -1,9 +1,7 @@
 #include <bits/stdc++.h>
 //update include path if have error
-#include "lib/debug2.h"
-#include "lib/testlib.h"
-#define VEC(v, i) (v.at(i))
-#define MAT(mat, i, j) (mat.at(i).at(j))
+#include "../../../../99.Share/lib/debug2.h"
+#include "../../../../99.Share/lib/testlib.h"
 
 using namespace std;
 #define FOR(i,a,b) for(ll i=(a); i<(b); ++i)
@@ -36,21 +34,23 @@ void writeTest() {
     }else T++;
     for(int i=0; i<T; i++){
         //--CODE START HERE---
-        int n = 5*10000;
+        // Generate tree with n nodes
+        int n = rnd.next(10, 1000); // larger test cases
         println(n);
-        FOR(i,n){
-            cout << rnd.next(-100000000, 100000000) << " ";
+        
+        // Generate values v[1..n]
+        FOR(j, 1, n+1){
+            cout << rnd.next(-100000, 100000) << " ";
         }
         cout << endl;
-        int m = 5*100000;
-        println(m);
-        FOR(i,m){
-            cout << rnd.next(1,n) << " " << rnd.next((int)-1e13, (int)1e13) << endl;
+        
+        // Generate parent array p[1..n], forming a valid tree
+        // Node 1 is root (p[1] = 0), others have random parent in [1, i-1]
+        cout << 0; // p[1] = 0 (root)
+        FOR(j, 2, n+1){
+            cout << " " << rnd.next(1, (int)j-1); // parent is any node before this one
         }
-        //println(rnd.wnext(1, 1000000, opt<int>(1)));
-        //println(rnd.next("[a-zA-Z0-9]{1,1000}"))
-        //println(rnd.next("[a-zA-Z0-9]{1,%d}", length));
-        //println(rnd.next("[0000000001]{100}"));
+        cout << endl;
 
     }
     fclose(fp);

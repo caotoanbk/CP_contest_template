@@ -4,6 +4,8 @@ using namespace std;
 // ========== Debug ==========
 #ifdef ON_PC
   #include "lib\debug2.h"
+  #define VEC(v, i) (v.at(i))
+  #define MAT(mat, i, j) (mat.at(i).at(j))
 #else
   #define dbg(...)
   #define dbgArr(...)
@@ -49,93 +51,82 @@ void signalHandler(int signum) {
     exit(signum);
 }
 
-const ll mod = (ll)(1e9)+7;
-
-
-ll powmod(ll a, ll b){
-  ll ans = 1;
-  a %= mod;
-  while(b){
-    if(b&1) ans =ans*a % mod;
-    a =a * a % mod;
-    b >>= 1;
-  }
-  return ans;
-}
-
-ll modinv(ll a){
-  return powmod(a, mod-2);
-}
-
-ll geo_sum(ll x, ll len){
-  if(len < 2) return 0;
-  if(x == 1) return (len-1)%mod;
-  ll first = (x%mod) * (x%mod) % mod;
-  ll num = (powmod(x, len-1)-1 + mod)%mod;
-  ll den = modinv(x-1);
-  return (first * num % mod) * den % mod;
-}
-
-
 // ========== Solve function ==========
 int n;
-vt<int> A;
-vt<int> r,l;
-unordered_map<int, int> freq, last;
-
+vt<ll> B;
 void solve(){
-  cin>>n; 
-  A.assign(n+1,0);
-  r.assign(n+1,0);
-  l.assign(n+1,0);
-  freq.clear();
-  last.clear();
-  FOR(i, 1,n+1) cin >> A[i];
-  int x = 0;
-  FOR(i,1,n+1){
-   while(x+1 <= n && freq[A[x+1]] == 0){
-    freq[A[++x]]++;
-   } 
-   r[i] = x;
-   freq[A[i]]--;
-  }
-  // dbg(A);
-  // dbg(r);
+  cin >> n;
+  B.resize(n+1);
+  REP(i,n){
+    cin >> B[i+1];
+  } 
 
-  int curL = 1;
-  FOR(i, 1, n+1){
-    if(last.count(A[i])){
-      curL =max(curL, last[A[i]] + 1);
+  //next greater to right (strictly >)
+  vt<int> nextGeater(n+2, n+1);
+  {
+    vt<int> st;
+    for(int i= n; i>=1; --i){
+      while(!st.empty() && B[st.back()] <= B[i]) st.pop_back();
+      nextGeater[i] = st.empty() ? n+1 : st.back();;
+      st.push_back(i);
     }
-    l[i] = curL;
-    last[A[i]] = i;
-  }  
-
-
+  }
+  //previous greater to left (strictly >)
+  vt<int> prevGreater(n+2, 0);
+  {
+    vt<int> st;
+    for(int i= 1; i<=n; ++i){
+      while(!st.empty() && B[st.back()] <= B[i]) st.pop_back();
+      prevGreater[i] = st.empty() ? 0 : st.back();
+      st.push_back(i);
+    }
+  }
+  unordered_map<int, vt<int>> pos;
+  pos.reserve(2 * n); // để đạt LF ~0.5
+  FOR(i,1,n+1){
+    pos[B[i]].pb(i);
+  }
+  unordered_map<int, vt<ll>> prefixSum;
+  prefixSum.reserve(2 * n); // để đạt LF ~0.5
+  for(auto& [val, indices] : pos){
+    vt<ll> ps(sz(indices)+1, 0);
+    REP(i, sz(indices)){
+      ps[i+1] = ps[i] + indices[i];
+    }
+    prefixSum[val] = move(ps);
+  }
 
   ll ans = 0;
   FOR(i,1,n+1){
-    int len = r[i]-i+1;
-    ans = (ans+ geo_sum(i, len))%mod;
+    ll val = B[i];
+    int gR = nextGeater[i];
+    if(gR <= n){
+      if(gR-i+1 > 2) ans += gR-i+1;
+    }
+    //right equal endpoints in (i+1, gR-1)
+    int L = i+2;
+    int R = gR-1;
+    if(L <= R){
+      auto &vec = pos[val];
+      auto &ps = prefixSum[val];
+      int l = lower_bound(all(vec), L) - vec.begin();;
+      int r = upper_bound(all(vec), R) - vec.begin() - 1;
+      if(l <= r){
+        ll count = r - l + 1;
+        ll sumIndices = ps[r + 1] - ps[l];
+        ans += sumIndices - count * (i - 1);
+      }
+    }
 
-    int y = l[i];
-    len = i-y+1;
-    ans = (ans+geo_sum(i, len))%mod;
-
+    int gL = prevGreater[i];
+    if(gL >= 1){
+      if(i - gL + 1 > 2) ans += i - gL + 1;
+    }
   }
 
-  // ----- i-side -----
-    // for(int i=1;i<=n;i++){
-    //     int len = r[i] - i + 1;
-    //     ans = (ans + geo_sum(i, len)) % mod;
-    // }
+  cout << ans << nl;
 
-    // // ----- j-side -----
-    // for(int j=1;j<=n;j++){
-    //     int len = j - l[j] + 1;
-    //     ans = (ans + geo_sum(j, len)) % mod;
-    // }
-  cout << ans%mod << nl;
+
 }
 
 // ========== Main ==========

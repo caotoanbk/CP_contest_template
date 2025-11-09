@@ -4,18 +4,12 @@ using namespace std;
 // ========== Debug ==========
 #ifdef ON_PC
   #include "lib\debug2.h"
+  #define VEC(v, i) (v.at(i))
+  #define MAT(mat, i, j) (mat.at(i).at(j))
 #else
   #define dbg(...)
   #define dbgArr(...)
 #endif
-
-// ========== Fast IO initializer ==========
-struct FastIO {
-    FastIO() {
-        ios::sync_with_stdio(false);
-        cin.tie(nullptr);
-    }
-} fastio; // khởi tạo trước main
 
 // ========== Aliases & Macros ==========
 using ll = long long;
@@ -49,99 +43,57 @@ void signalHandler(int signum) {
     exit(signum);
 }
 
-const ll mod = (ll)(1e9)+7;
-
-
-ll powmod(ll a, ll b){
-  ll ans = 1;
-  a %= mod;
-  while(b){
-    if(b&1) ans =ans*a % mod;
-    a =a * a % mod;
-    b >>= 1;
+// ========== Solve function ==========
+int n,k;
+ll countLE(const vt<ll>& a, ll D){
+  ll m = sz(a);
+  ll ans = 0;
+  int r = 0;
+  for(int l = 0, r = 0; l < m; ++l){
+    while(r < m && a[r] - a[l] <= D) ++r;
+    ans += (r - l - 1);
   }
   return ans;
 }
-
-ll modinv(ll a){
-  return powmod(a, mod-2);
-}
-
-ll geo_sum(ll x, ll len){
-  if(len < 2) return 0;
-  if(x == 1) return (len-1)%mod;
-  ll first = (x%mod) * (x%mod) % mod;
-  ll num = (powmod(x, len-1)-1 + mod)%mod;
-  ll den = modinv(x-1);
-  return (first * num % mod) * den % mod;
-}
-
-
-// ========== Solve function ==========
-int n;
-vt<int> A;
-vt<int> r,l;
-unordered_map<int, int> freq, last;
-
 void solve(){
-  cin>>n; 
-  A.assign(n+1,0);
-  r.assign(n+1,0);
-  l.assign(n+1,0);
-  freq.clear();
-  last.clear();
-  FOR(i, 1,n+1) cin >> A[i];
-  int x = 0;
-  FOR(i,1,n+1){
-   while(x+1 <= n && freq[A[x+1]] == 0){
-    freq[A[++x]]++;
-   } 
-   r[i] = x;
-   freq[A[i]]--;
+  cin >> n >> k;
+  vt<ll> A(n,0);
+  REP(i,n){
+    cin >> A[i];
   }
-  // dbg(A);
-  // dbg(r);
-
-  int curL = 1;
-  FOR(i, 1, n+1){
-    if(last.count(A[i])){
-      curL =max(curL, last[A[i]] + 1);
+  vt<ll> B(n,0);
+  REP(i,n){
+    cin >> B[i];
+  }
+  vt<ll> C(n,0);
+  REP(i,n){
+    C[i] = A[i] - B[i];
+  } 
+  sort(all(C));
+  ll lo = 0,hi = C.back() - C.front();
+  while(lo < hi){
+    ll mid = lo + (hi - lo) / 2;
+    ll cnt = countLE(C, mid);
+    if(cnt >= k){
+      hi = mid;
+    } else {
+      lo = mid + 1;
     }
-    l[i] = curL;
-    last[A[i]] = i;
-  }  
-
-
-
-  ll ans = 0;
-  FOR(i,1,n+1){
-    int len = r[i]-i+1;
-    ans = (ans+ geo_sum(i, len))%mod;
-
-    int y = l[i];
-    len = i-y+1;
-    ans = (ans+geo_sum(i, len))%mod;
-
   }
 
-  // ----- i-side -----
-    // for(int i=1;i<=n;i++){
-    //     int len = r[i] - i + 1;
-    //     ans = (ans + geo_sum(i, len)) % mod;
-    // }
-
-    // // ----- j-side -----
-    // for(int j=1;j<=n;j++){
-    //     int len = j - l[j] + 1;
-    //     ans = (ans + geo_sum(j, len)) % mod;
-    // }
-  cout << ans%mod << nl;
+  if(countLE(C, lo) != k){
+    cout << -1 << nl;
+  } else {
+    cout << lo << nl;
+  }
 }
 
 // ========== Main ==========
 int main() {
     signal(SIGSEGV, signalHandler);
     signal(SIGABRT, signalHandler);
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
     
     #ifdef ON_PC
       #define SHARE_PATH "D:/C++/CP/99.Share/"

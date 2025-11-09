@@ -49,93 +49,69 @@ void signalHandler(int signum) {
     exit(signum);
 }
 
-const ll mod = (ll)(1e9)+7;
-
-
-ll powmod(ll a, ll b){
-  ll ans = 1;
-  a %= mod;
-  while(b){
-    if(b&1) ans =ans*a % mod;
-    a =a * a % mod;
-    b >>= 1;
-  }
-  return ans;
-}
-
-ll modinv(ll a){
-  return powmod(a, mod-2);
-}
-
-ll geo_sum(ll x, ll len){
-  if(len < 2) return 0;
-  if(x == 1) return (len-1)%mod;
-  ll first = (x%mod) * (x%mod) % mod;
-  ll num = (powmod(x, len-1)-1 + mod)%mod;
-  ll den = modinv(x-1);
-  return (first * num % mod) * den % mod;
-}
-
-
 // ========== Solve function ==========
-int n;
-vt<int> A;
-vt<int> r,l;
-unordered_map<int, int> freq, last;
-
+int n,x,y,z;
+vt<int> v;
 void solve(){
-  cin>>n; 
-  A.assign(n+1,0);
-  r.assign(n+1,0);
-  l.assign(n+1,0);
-  freq.clear();
-  last.clear();
-  FOR(i, 1,n+1) cin >> A[i];
-  int x = 0;
-  FOR(i,1,n+1){
-   while(x+1 <= n && freq[A[x+1]] == 0){
-    freq[A[++x]]++;
-   } 
-   r[i] = x;
-   freq[A[i]]--;
-  }
-  // dbg(A);
-  // dbg(r);
+  ll result = LLONG_MIN;
+  cin >> n >> x >> y >> z;
+  v.resize(n);
+  REP(i,n) cin >> v[i]; 
 
-  int curL = 1;
-  FOR(i, 1, n+1){
-    if(last.count(A[i])){
-      curL =max(curL, last[A[i]] + 1);
+  auto getMax = [&](int a, int b, int c){
+    vt<ll> leftMax(n, LLONG_MIN), rightMax(n, LLONG_MIN);
+    vt<ll> leftMin(n, LLONG_MAX), rightMin(n, LLONG_MAX);
+    ll windowSum = 0;
+    REP(i, a) windowSum += v[i];
+    leftMax[a-1] = windowSum;
+    leftMin[a-1] = windowSum;
+    FOR(i, a, n){
+      windowSum += v[i] - v[i - a];
+      leftMax[i] = max(leftMax[i-1], windowSum);
+      leftMin[i] = min(leftMin[i-1], windowSum);
     }
-    l[i] = curL;
-    last[A[i]] = i;
-  }  
+  
+    windowSum = 0;
+    
+    for(int i= n-1; i>=n-c; --i) windowSum += v[i];
+    rightMax[n - c] = windowSum;
+    rightMin[n - c] = windowSum;
+    for(int i= n - c -1; i>=0; --i){
+      windowSum += v[i] - v[i + c];
+      rightMax[i] = max(rightMax[i+1], windowSum);
+      rightMin[i] = min(rightMin[i+1], windowSum);
+    }
+    windowSum = 0;
+    for(int i= a; i< a+b; ++i) windowSum += v[i];
+    for(int i= a; i<= n - b - c; ++i){
+      if(i > a){
+        windowSum += v[i + b-1] - v[i-1];
+      }
+      ll Sb = windowSum;
+      ll Sa_max = leftMax[i -1];
+      ll Sa_min = leftMin[i -1];
+      ll Sc_max = rightMax[i + b];
+      ll Sc_min = rightMin[i + b];
+  
+      chmax(result, Sa_max*Sb*Sc_max);
+      chmax(result, Sa_min*Sb*Sc_min);
+      chmax(result, Sa_max*Sb*Sc_min);
+      chmax(result, Sa_min*Sb*Sc_max);
+    }
+  };
+  // getMax(x, y, z);
+  // getMax(x, z, y);
+  // getMax(y, x, z);
+  // getMax(y, z, x);
+  // getMax(z, x, y);
+  // getMax(z, y, x);
+  vt<int> lengths = {x, y, z};
+  sort(all(lengths));
+  do{
+    getMax(lengths[0], lengths[1], lengths[2]);
+  }while(next_permutation(all(lengths)));
 
-
-
-  ll ans = 0;
-  FOR(i,1,n+1){
-    int len = r[i]-i+1;
-    ans = (ans+ geo_sum(i, len))%mod;
-
-    int y = l[i];
-    len = i-y+1;
-    ans = (ans+geo_sum(i, len))%mod;
-
-  }
-
-  // ----- i-side -----
-    // for(int i=1;i<=n;i++){
-    //     int len = r[i] - i + 1;
-    //     ans = (ans + geo_sum(i, len)) % mod;
-    // }
-
-    // // ----- j-side -----
-    // for(int j=1;j<=n;j++){
-    //     int len = j - l[j] + 1;
-    //     ans = (ans + geo_sum(j, len)) % mod;
-    // }
-  cout << ans%mod << nl;
+  cout << result << nl;
 }
 
 // ========== Main ==========
@@ -157,6 +133,7 @@ int main() {
     int T = 1;
     cin >> T;
     while(T--){
+      // dbg(T);
         solve();
     }
 

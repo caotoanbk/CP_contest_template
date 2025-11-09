@@ -4,6 +4,8 @@ using namespace std;
 // ========== Debug ==========
 #ifdef ON_PC
   #include "lib\debug2.h"
+  #define VEC(v, i) (v.at(i))
+  #define MAT(mat, i, j) (mat.at(i).at(j))
 #else
   #define dbg(...)
   #define dbgArr(...)
@@ -49,93 +51,120 @@ void signalHandler(int signum) {
     exit(signum);
 }
 
-const ll mod = (ll)(1e9)+7;
-
-
-ll powmod(ll a, ll b){
-  ll ans = 1;
-  a %= mod;
-  while(b){
-    if(b&1) ans =ans*a % mod;
-    a =a * a % mod;
-    b >>= 1;
+struct Tarjan{
+   int n;
+   vector<vector<int>> adj;
+   vector<int> low, num, comp, st;
+   vt<bool> inStack;
+   int dfsTime=0, compCnt = 0;
+   Tarjan(int n): n(n), adj(n), low(n, -1), num(n, -1), comp(n, -1), inStack(n, false) {}
+    void addEdge(int u, int v){
+      adj[u].pb(v);
+    }
+    void dfs(int u){
+      low [u] = num[u] = dfsTime++;
+      st.pb(u);
+      inStack[u] = true;
+      for(int v: adj[u]){
+        if(num[v] == -1){
+          dfs(v);
+          chmin(low[u], low[v]);
+        }else{
+          if(inStack[v]){
+            chmin(low[u], num[v]);
+          }
+        }
+      }
+      if(low[u] == num[u]){
+        while(true){
+          int v = st.back(); st.pop_back();
+          inStack[v] = false;
+          comp[v] = compCnt;
+          if(u == v) break;
+        }
+        compCnt++;
+    }
   }
-  return ans;
-}
-
-ll modinv(ll a){
-  return powmod(a, mod-2);
-}
-
-ll geo_sum(ll x, ll len){
-  if(len < 2) return 0;
-  if(x == 1) return (len-1)%mod;
-  ll first = (x%mod) * (x%mod) % mod;
-  ll num = (powmod(x, len-1)-1 + mod)%mod;
-  ll den = modinv(x-1);
-  return (first * num % mod) * den % mod;
-}
-
+    void run(){
+      FOR(i,0,n){
+        if(num[i] == -1){
+          dfs(i);
+        }
+      }
+    }
+};
 
 // ========== Solve function ==========
-int n;
-vt<int> A;
-vt<int> r,l;
-unordered_map<int, int> freq, last;
-
+int n,m;
 void solve(){
-  cin>>n; 
-  A.assign(n+1,0);
-  r.assign(n+1,0);
-  l.assign(n+1,0);
-  freq.clear();
-  last.clear();
-  FOR(i, 1,n+1) cin >> A[i];
-  int x = 0;
-  FOR(i,1,n+1){
-   while(x+1 <= n && freq[A[x+1]] == 0){
-    freq[A[++x]]++;
-   } 
-   r[i] = x;
-   freq[A[i]]--;
+  cin >> n >> m;
+  Tarjan tj(n);
+  REP(i,m){
+    int u,v;
+    cin >> u >> v;
+    u--; v--;
+    tj.addEdge(u,v);
   }
-  // dbg(A);
-  // dbg(r);
-
-  int curL = 1;
-  FOR(i, 1, n+1){
-    if(last.count(A[i])){
-      curL =max(curL, last[A[i]] + 1);
+  tj.run();
+  int C = tj.compCnt;
+  vt<int> indeg(C,0);
+  for(int u=0; u<n; ++u){
+    for(int v: tj.adj[u]){
+      if(tj.comp[u] != tj.comp[v]){
+        indeg[tj.comp[v]]++;
+      }
     }
-    l[i] = curL;
-    last[A[i]] = i;
-  }  
-
-
-
-  ll ans = 0;
-  FOR(i,1,n+1){
-    int len = r[i]-i+1;
-    ans = (ans+ geo_sum(i, len))%mod;
-
-    int y = l[i];
-    len = i-y+1;
-    ans = (ans+geo_sum(i, len))%mod;
-
+  }
+  int sourceSCC = -1;
+  REP(c,C){
+    if(indeg[c] == 0){
+      if(sourceSCC != -1){ // more than 1 source SCC
+        cout << "0\n";
+        return;
+      }
+      sourceSCC = c;
+    }
+  }
+  if(sourceSCC == -1){
+    cout << "0\n";
+    return;
+  }
+  vt<int> nodes;
+  FOR(i,0,n){
+    if(tj.comp[i] == sourceSCC){
+      nodes.pb(i);
+    }
   }
 
-  // ----- i-side -----
-    // for(int i=1;i<=n;i++){
-    //     int len = r[i] - i + 1;
-    //     ans = (ans + geo_sum(i, len)) % mod;
-    // }
+  //verify 
+  {
+    vt<char> visited(n, 0);
+    queue<int> q;
+    q.push(nodes[0]); visited[nodes[0]] = 1;
+    while(!q.empty()){
+      int u = q.front(); q.pop();
+      for(int v: tj.adj[u]){
+        if(!visited[v]){
+          visited[v] = 1;
+          q.push(v);
+        }
+      }
+    }
 
-    // // ----- j-side -----
-    // for(int j=1;j<=n;j++){
-    //     int len = j - l[j] + 1;
-    //     ans = (ans + geo_sum(j, len)) % mod;
-    // }
-  cout << ans%mod << nl;
+    FOR(i, 0, n){
+      if(!visited[i]){
+        cout << "0\n";
+        return;
+      }
+    }
+  }
+
+  cout<< sz(nodes) << nl;
+  for(int u: nodes){
+    cout << (u+1) << " ";
+  }
+  cout << nl;
+
 }
 
 // ========== Main ==========
@@ -155,7 +184,7 @@ int main() {
     #endif
 
     int T = 1;
-    cin >> T;
+    // cin >> T;
     while(T--){
         solve();
     }

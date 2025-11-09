@@ -49,93 +49,44 @@ void signalHandler(int signum) {
     exit(signum);
 }
 
-const ll mod = (ll)(1e9)+7;
-
-
-ll powmod(ll a, ll b){
-  ll ans = 1;
-  a %= mod;
-  while(b){
-    if(b&1) ans =ans*a % mod;
-    a =a * a % mod;
-    b >>= 1;
-  }
-  return ans;
+bool disjoint(int l1, int r1, int l2, int r2){
+  return r1 < l2 || r2 < l1;
 }
-
-ll modinv(ll a){
-  return powmod(a, mod-2);
-}
-
-ll geo_sum(ll x, ll len){
-  if(len < 2) return 0;
-  if(x == 1) return (len-1)%mod;
-  ll first = (x%mod) * (x%mod) % mod;
-  ll num = (powmod(x, len-1)-1 + mod)%mod;
-  ll den = modinv(x-1);
-  return (first * num % mod) * den % mod;
-}
-
 
 // ========== Solve function ==========
-int n;
-vt<int> A;
-vt<int> r,l;
-unordered_map<int, int> freq, last;
-
+int n,a,b,c;
+vt<int> v;
 void solve(){
-  cin>>n; 
-  A.assign(n+1,0);
-  r.assign(n+1,0);
-  l.assign(n+1,0);
-  freq.clear();
-  last.clear();
-  FOR(i, 1,n+1) cin >> A[i];
-  int x = 0;
-  FOR(i,1,n+1){
-   while(x+1 <= n && freq[A[x+1]] == 0){
-    freq[A[++x]]++;
-   } 
-   r[i] = x;
-   freq[A[i]]--;
-  }
-  // dbg(A);
-  // dbg(r);
+  cin >> n >> a >> b >> c;
+  v.resize(n);
+  REP(i,n) cin >> v[i]; 
+  ll best = LLONG_MIN;
 
-  int curL = 1;
-  FOR(i, 1, n+1){
-    if(last.count(A[i])){
-      curL =max(curL, last[A[i]] + 1);
+  vt<ll> P(n+1, 0);
+  REP(i,n) P[i+1] = P[i] + v[i];
+  auto sumRange = [&](int l, int r){
+    return P[r+1] - P[l];
+  };
+
+  for(int s1 = 0; s1 +a <=n; s1++){
+    int e1 = s1 + a -1;
+    ll Sa = sumRange(s1, e1);
+    for(int s2=0; s2 + b <= n; s2++){
+      int e2 = s2+b-1;
+      ll Sb = sumRange(s2, e2);
+      if(!disjoint(s1, e1, s2, e2)) continue;
+      for(int s3=0; s3 + c <= n; s3++){
+        int e3 = s3 + c -1;
+        ll Sc = sumRange(s3, e3);
+        if(!disjoint(s1, e1, s3, e3)) continue;
+        if(!disjoint(s2, e2, s3, e3)) continue;
+        ll product = Sa * Sb * Sc;
+        chmax(best, product);
+      }
     }
-    l[i] = curL;
-    last[A[i]] = i;
-  }  
-
-
-
-  ll ans = 0;
-  FOR(i,1,n+1){
-    int len = r[i]-i+1;
-    ans = (ans+ geo_sum(i, len))%mod;
-
-    int y = l[i];
-    len = i-y+1;
-    ans = (ans+geo_sum(i, len))%mod;
-
   }
 
-  // ----- i-side -----
-    // for(int i=1;i<=n;i++){
-    //     int len = r[i] - i + 1;
-    //     ans = (ans + geo_sum(i, len)) % mod;
-    // }
-
-    // // ----- j-side -----
-    // for(int j=1;j<=n;j++){
-    //     int len = j - l[j] + 1;
-    //     ans = (ans + geo_sum(j, len)) % mod;
-    // }
-  cout << ans%mod << nl;
+  cout << best << nl;
 }
 
 // ========== Main ==========
@@ -146,7 +97,7 @@ int main() {
     #ifdef ON_PC
       #define SHARE_PATH "D:/C++/CP/99.Share/"
       FILE* f1 = freopen(SHARE_PATH "input.txt","r",stdin);
-      FILE* f2 = freopen(SHARE_PATH "output.txt","w",stdout);
+      FILE* f2 = freopen(SHARE_PATH "ans.txt","w",stdout);
       if(!f1){
         cerr<< "Error when open input"<<"\n";
         return 0;
@@ -157,6 +108,7 @@ int main() {
     int T = 1;
     cin >> T;
     while(T--){
+      // dbg(T);
         solve();
     }
 

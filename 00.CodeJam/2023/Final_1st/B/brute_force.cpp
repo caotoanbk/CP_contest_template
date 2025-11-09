@@ -43,8 +43,39 @@ template<class T> inline bool chmin(T& a,const T& b){if(b<a){a=b;return true;}re
 template<class T> inline bool chmax(T& a,const T& b){if(b>a){a=b;return true;}return false;}
 
 // ========== Solve function ==========
+int n,k,a,b;
 void solve(){
-  
+  cin >> n >> k >> a >> b; 
+  vt<ll> s(n);
+  REP(i,n){
+    cin >> s[i];
+    if(s[i] == 1) k--;
+  }
+  if(k <= 0){
+    cout << 0 << nl;
+    return;
+  }
+  // DP: dp[j] = minimum cost to get at least j unit sticks from cutting
+  vt<ll> dp(k+1, LLONG_MAX);
+  dp[0] = 0;
+  REP(i,n){
+    if(s[i] >= 2){
+      int L = s[i];
+      ll cost = 1ll*a* (L-1)*(L-1) + b;
+      // Update DP in reverse order (0/1 knapsack)
+      for(int j = k; j >= 0; --j){
+        if(dp[j] != LLONG_MAX){
+          int next = min(k, j + L);
+          chmin(dp[next], dp[j] + cost);
+        }
+      }
+    }
+  }
+  if(dp[k] == LLONG_MAX){
+    cout << -1 << nl;
+  } else {
+    cout << dp[k] << nl;
+  }
 }
 
 // ========== Main ==========

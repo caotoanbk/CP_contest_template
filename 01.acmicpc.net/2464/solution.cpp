@@ -4,6 +4,8 @@ using namespace std;
 // ========== Debug ==========
 #ifdef ON_PC
   #include "lib\debug2.h"
+  #define VEC(v, i) (v.at(i))
+  #define MAT(mat, i, j) (mat.at(i).at(j))
 #else
   #define dbg(...)
   #define dbgArr(...)
@@ -49,93 +51,80 @@ void signalHandler(int signum) {
     exit(signum);
 }
 
-const ll mod = (ll)(1e9)+7;
-
-
-ll powmod(ll a, ll b){
-  ll ans = 1;
-  a %= mod;
-  while(b){
-    if(b&1) ans =ans*a % mod;
-    a =a * a % mod;
-    b >>= 1;
-  }
-  return ans;
-}
-
-ll modinv(ll a){
-  return powmod(a, mod-2);
-}
-
-ll geo_sum(ll x, ll len){
-  if(len < 2) return 0;
-  if(x == 1) return (len-1)%mod;
-  ll first = (x%mod) * (x%mod) % mod;
-  ll num = (powmod(x, len-1)-1 + mod)%mod;
-  ll den = modinv(x-1);
-  return (first * num % mod) * den % mod;
-}
-
-
 // ========== Solve function ==========
-int n;
-vt<int> A;
-vt<int> r,l;
-unordered_map<int, int> freq, last;
-
+ll N;
 void solve(){
-  cin>>n; 
-  A.assign(n+1,0);
-  r.assign(n+1,0);
-  l.assign(n+1,0);
-  freq.clear();
-  last.clear();
-  FOR(i, 1,n+1) cin >> A[i];
-  int x = 0;
-  FOR(i,1,n+1){
-   while(x+1 <= n && freq[A[x+1]] == 0){
-    freq[A[++x]]++;
-   } 
-   r[i] = x;
-   freq[A[i]]--;
-  }
-  // dbg(A);
-  // dbg(r);
-
-  int curL = 1;
-  FOR(i, 1, n+1){
-    if(last.count(A[i])){
-      curL =max(curL, last[A[i]] + 1);
+  cin >> N; 
+  bool found_lower = false;
+  bool found_higher = false;
+  ll temp = N, A=0, B=0;
+  // Tìm A (số nhỏ hơn N gần nhất với số bit 1 bằng N)
+  {
+    int pos = -1;
+    REP(i,63){
+      bool bit_i =  (temp >> i) & 1;
+      bool bit_i1 = (temp >> (i+1)) & 1;
+      if(bit_i1 == 1 && bit_i  == 0){
+        pos = i;
+        break;
+      }
     }
-    l[i] = curL;
-    last[A[i]] = i;
-  }  
 
+    if(pos != -1){
+      found_lower = true;
+      A = N;
+      A &= ~(1ULL << (pos+1));
+      A |=  (1ULL << pos);
 
-
-  ll ans = 0;
-  FOR(i,1,n+1){
-    int len = r[i]-i+1;
-    ans = (ans+ geo_sum(i, len))%mod;
-
-    int y = l[i];
-    len = i-y+1;
-    ans = (ans+geo_sum(i, len))%mod;
-
+      int ones = 0, zeros = 0;
+      REP(i,pos){
+        bool bit_i = (N >> i) & 1;
+        if(bit_i) ones++;
+        else zeros++;
+      }
+      A &= ~((1ULL << pos) - 1); // clear all bits lower than pos
+      PER(i, pos){
+        if(ones > 0){
+          A |= (1ULL << i);
+          ones--;
+        }
+      }
+    }
   }
 
-  // ----- i-side -----
-    // for(int i=1;i<=n;i++){
-    //     int len = r[i] - i + 1;
-    //     ans = (ans + geo_sum(i, len)) % mod;
-    // }
+  // Tim B (số lớn hơn N gần nhất với số bit 1 bằng N)
+  {
+    int pos = -1;
+    REP(i, 63){
+      bool bit_i = (N >> i) & 1;
+      bool bit_i1 = (N >> (i+1)) & 1;
+      if(bit_i1 == 0 && bit_i == 1){
+        pos = i;
+        break;
+      }
+    }
+    if(pos != -1){
+      found_higher = true;
+      B = N;
+      B &= ~(1ULL << pos);
+      B |=  (1ULL << (pos+1));
+      int ones = 0, zeros =0;
+      REP(i, pos){
+        bool bit_i = (N >> i) & 1;
+        if(bit_i) ones++;
+        else zeros++;
+      }
+      B &= ~((1ULL << pos) - 1); // clear all bits lower than pos
+      REP(i, pos){
+        if(ones > 0){
+          B |= (1ULL << i);
+          ones--;
+        }
+      }
+    }
+  }
 
-    // // ----- j-side -----
-    // for(int j=1;j<=n;j++){
-    //     int len = j - l[j] + 1;
-    //     ans = (ans + geo_sum(j, len)) % mod;
-    // }
-  cout << ans%mod << nl;
+  cout << A << " " << B << nl;
 }
 
 // ========== Main ==========
@@ -155,7 +144,7 @@ int main() {
     #endif
 
     int T = 1;
-    cin >> T;
+    // cin >> T;
     while(T--){
         solve();
     }

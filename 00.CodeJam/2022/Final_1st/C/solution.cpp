@@ -49,93 +49,90 @@ void signalHandler(int signum) {
     exit(signum);
 }
 
-const ll mod = (ll)(1e9)+7;
+int bestLen = 1;
+int bestCnt =0;
 
-
-ll powmod(ll a, ll b){
-  ll ans = 1;
-  a %= mod;
-  while(b){
-    if(b&1) ans =ans*a % mod;
-    a =a * a % mod;
-    b >>= 1;
+inline void updateAns(int len1, int len2){
+  if(len1 + len2 -1 > bestLen){
+    bestLen = len1 + len2 -1;
+    bestCnt = 1;
+  }else if(len1 + len2 -1 == bestLen){
+    bestCnt++;
   }
-  return ans;
 }
 
-ll modinv(ll a){
-  return powmod(a, mod-2);
-}
-
-ll geo_sum(ll x, ll len){
-  if(len < 2) return 0;
-  if(x == 1) return (len-1)%mod;
-  ll first = (x%mod) * (x%mod) % mod;
-  ll num = (powmod(x, len-1)-1 + mod)%mod;
-  ll den = modinv(x-1);
-  return (first * num % mod) * den % mod;
-}
-
+struct State{
+  int mask;
+  int len;
+};
+const int MAXN = (int)1e5;
+vt<State> dp[MAXN+1];
+int label[MAXN+1];
+vt<vt<int>> adj(MAXN+1);
 
 // ========== Solve function ==========
-int n;
-vt<int> A;
-vt<int> r,l;
-unordered_map<int, int> freq, last;
-
-void solve(){
-  cin>>n; 
-  A.assign(n+1,0);
-  r.assign(n+1,0);
-  l.assign(n+1,0);
-  freq.clear();
-  last.clear();
-  FOR(i, 1,n+1) cin >> A[i];
-  int x = 0;
-  FOR(i,1,n+1){
-   while(x+1 <= n && freq[A[x+1]] == 0){
-    freq[A[++x]]++;
-   } 
-   r[i] = x;
-   freq[A[i]]--;
-  }
-  // dbg(A);
-  // dbg(r);
-
-  int curL = 1;
-  FOR(i, 1, n+1){
-    if(last.count(A[i])){
-      curL =max(curL, last[A[i]] + 1);
+void dfs(int u, int p){
+  dp[u].clear();
+  int mu = (1 << label[u]);
+  dp[u].pb({mu, 1});
+  for(auto v: adj[u]){
+    if(v == p) continue;
+    dfs(v, u);
+    for(auto st: dp[v]){
+      if(st.mask & mu){
+        continue;
+      }
+      bool exist = false;
+      for(auto st2: dp[u]){
+        if(st2.mask == (st.mask | mu)){
+          exist = true;
+          break;
+        }
+      }
+      if(!exist) dp[u].pb({st.mask | mu, st.len + 1});
     }
-    l[i] = curL;
-    last[A[i]] = i;
-  }  
-
-
-
-  ll ans = 0;
-  FOR(i,1,n+1){
-    int len = r[i]-i+1;
-    ans = (ans+ geo_sum(i, len))%mod;
-
-    int y = l[i];
-    len = i-y+1;
-    ans = (ans+geo_sum(i, len))%mod;
-
   }
 
-  // ----- i-side -----
-    // for(int i=1;i<=n;i++){
-    //     int len = r[i] - i + 1;
-    //     ans = (ans + geo_sum(i, len)) % mod;
-    // }
+  int k = dp[u].size();
+  FOR(i, 0, k){
+    FOR(j, i+1, k){
+      if(dp[u][i].mask & dp[u][j].mask) continue;
+      updateAns(dp[u][i].len, dp[u][j].len);
+    }
+  }
+  FOR(i, 0, k){
+    if(dp[u][i].len == bestLen){
+      bestCnt++;
+    }else if(dp[u][i].len > bestLen){
+      bestLen = dp[u][i].len;
+      bestCnt = 1;
+    }
+  }
+}
+int n,root;
+void solve(){
+  bestLen = 1;
+  bestCnt = 0;
+  cin >> n;
+   string s; cin >> s;
+   FOR(i, 0, n){
+      label[i+1] = s[i] - 'A';
+   }
+   FOR(i, 1, n+1){
+      adj[i].clear();
+      int p; cin >> p;
+      if(p){
+        adj[p].pb(i);
+        adj[i].pb(p);
+      }else{
+        root = i;
+      }
+   }
 
-    // // ----- j-side -----
-    // for(int j=1;j<=n;j++){
-    //     int len = j - l[j] + 1;
-    //     ans = (ans + geo_sum(j, len)) % mod;
-    // }
-  cout << ans%mod << nl;
+   dfs(root, 0);
+
+   cout << bestLen << " " << bestCnt << nl;
+
 }
 
 // ========== Main ==========

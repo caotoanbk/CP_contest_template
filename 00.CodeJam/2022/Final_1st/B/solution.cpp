@@ -49,93 +49,68 @@ void signalHandler(int signum) {
     exit(signum);
 }
 
-const ll mod = (ll)(1e9)+7;
-
-
-ll powmod(ll a, ll b){
-  ll ans = 1;
-  a %= mod;
-  while(b){
-    if(b&1) ans =ans*a % mod;
-    a =a * a % mod;
-    b >>= 1;
-  }
-  return ans;
-}
-
-ll modinv(ll a){
-  return powmod(a, mod-2);
-}
-
-ll geo_sum(ll x, ll len){
-  if(len < 2) return 0;
-  if(x == 1) return (len-1)%mod;
-  ll first = (x%mod) * (x%mod) % mod;
-  ll num = (powmod(x, len-1)-1 + mod)%mod;
-  ll den = modinv(x-1);
-  return (first * num % mod) * den % mod;
-}
-
-
 // ========== Solve function ==========
-int n;
-vt<int> A;
-vt<int> r,l;
-unordered_map<int, int> freq, last;
-
+int n,m,k;
+vt<int> v1,v2;
 void solve(){
-  cin>>n; 
-  A.assign(n+1,0);
-  r.assign(n+1,0);
-  l.assign(n+1,0);
-  freq.clear();
-  last.clear();
-  FOR(i, 1,n+1) cin >> A[i];
-  int x = 0;
-  FOR(i,1,n+1){
-   while(x+1 <= n && freq[A[x+1]] == 0){
-    freq[A[++x]]++;
-   } 
-   r[i] = x;
-   freq[A[i]]--;
+  cin >> n >> m >> k;
+  v1.resize(n);
+  v2.resize(m);
+  FOR(i,0,n){
+    cin>>v1[i];
   }
-  // dbg(A);
-  // dbg(r);
+  FOR(i,0,m){
+    cin>>v2[i];
+  }
 
-  int curL = 1;
-  FOR(i, 1, n+1){
-    if(last.count(A[i])){
-      curL =max(curL, last[A[i]] + 1);
+  vt<int> sumA, sumB;
+  REP(i,1<<n){
+    if(__builtin_popcount(i) == k){
+      int sum = 0;
+      REP(j,n){
+        if(i & (1<<j)){
+          sum += v1[j];
+        }
+      }
+      sumA.pb(sum);
     }
-    l[i] = curL;
-    last[A[i]] = i;
-  }  
-
-
-
-  ll ans = 0;
-  FOR(i,1,n+1){
-    int len = r[i]-i+1;
-    ans = (ans+ geo_sum(i, len))%mod;
-
-    int y = l[i];
-    len = i-y+1;
-    ans = (ans+geo_sum(i, len))%mod;
-
   }
 
-  // ----- i-side -----
-    // for(int i=1;i<=n;i++){
-    //     int len = r[i] - i + 1;
-    //     ans = (ans + geo_sum(i, len)) % mod;
-    // }
+  REP(i,1<<m){
+    if(__builtin_popcount(i) == k){
+      int sum = 0;
+      REP(j,m){
+        if(i & (1<<j)){
+          sum += v2[j];
+        }
+      }
+      sumB.pb(sum);
+    }
+  }
+  ll mxA = *max_element(all(sumA));
+  ll mxB = *max_element(all(sumB));
+  ll minA = *min_element(all(sumA));
+  ll minB = *min_element(all(sumB));
+  ll maxDiff = max(abs(mxA - minB), abs(mxB - minA));
 
-    // // ----- j-side -----
-    // for(int j=1;j<=n;j++){
-    //     int len = j - l[j] + 1;
-    //     ans = (ans + geo_sum(j, len)) % mod;
-    // }
-  cout << ans%mod << nl;
+  sort(all(sumB));
+  ll minDiff = LLONG_MAX;
+  for(auto x: sumA){
+    auto it = lower_bound(all(sumB), x);
+    if(it != sumB.end()){
+      chmin(minDiff, 0ll+abs(x - *it));
+    }
+    if(it != sumB.begin()){
+      --it;
+      chmin(minDiff, 0ll+ abs(x - *it));
+    }
+  }
+
+
+  cout <<minDiff << " " << maxDiff << nl;
+
+
+
 }
 
 // ========== Main ==========
