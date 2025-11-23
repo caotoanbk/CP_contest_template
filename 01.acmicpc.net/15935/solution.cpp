@@ -7,8 +7,6 @@ using namespace std;
   #define VEC(v, i) (v.at(i))
   #define MAT(mat, i, j) (mat.at(i).at(j))
 #else
-  #define VEC(v, i) (v[i])
-  #define MAT(mat, i, j) (mat[i][j])
   #define dbg(...)
   #define dbgArr(...)
 #endif
@@ -45,11 +43,54 @@ void signalHandler(int signum) {
     exit(signum);
 }
 
-// ==========DEFINE OTHER STRUCT/CLASS/VARIABLE ==========
-
 // ========== Solve function ==========
+const ll MOD = 1e9 + 7;
+
+struct Mat {
+  int n;
+  vt<vt<ll>> a;
+  Mat(int n_, bool id = false) : n(n_), a(n_, vt<ll>(n_, 0)) {
+    if(id){
+      REP(i,n){
+        a[i][i] = 1;
+      }
+    }
+  }
+
+
+  Mat operator *(const Mat& other) const {
+    Mat res(n, false);
+    REP(i,n){
+      REP(j,n){
+        ll sum = 0;
+        REP(k,n){
+          // sum = (sum + a[i][k] * other.a[k][j]) % MOD;
+          sum += a[i][k] * other.a[k][j];
+          if(sum >= (1LL << 61)) sum %= MOD;
+        }
+        res.a[i][j] = sum;
+      }
+    }
+    return res;
+  }
+};
+
+Mat mpow(Mat base, ll exp){
+  Mat res(base.n, true);
+  while(exp > 0){
+    if(exp & 1){
+      res = res * base;
+    }
+    base = base * base;
+    exp >>= 1;
+  }
+  return res;
+}
+ll a,b;
 void solve(){
-  
+  if(!(cin >> a >> b)){
+    return;
+  }
 }
 
 // ========== Main ==========

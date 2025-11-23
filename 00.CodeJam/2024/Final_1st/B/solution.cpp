@@ -7,8 +7,6 @@ using namespace std;
   #define VEC(v, i) (v.at(i))
   #define MAT(mat, i, j) (mat.at(i).at(j))
 #else
-  #define VEC(v, i) (v[i])
-  #define MAT(mat, i, j) (mat[i][j])
   #define dbg(...)
   #define dbgArr(...)
 #endif
@@ -45,11 +43,48 @@ void signalHandler(int signum) {
     exit(signum);
 }
 
-// ==========DEFINE OTHER STRUCT/CLASS/VARIABLE ==========
-
 // ========== Solve function ==========
+
 void solve(){
-  
+  int n,m;
+  cin >> n >> m;
+  vt<int> X(n);
+  REP(i,n){
+    cin >> X[i];
+  }  
+  //build complement set B
+  vt<int> usedPos(n+1, 0), usedNeg(n+1, 0);
+  for(int x : X){
+    if(x > 0) usedPos[x] = 1;
+    else usedNeg[-x] = 1;
+  }
+
+  vt<int> B;
+  FOR(v,1,n+1){
+    if(usedPos[v] == 0) B.pb(v);
+    if(usedNeg[v] == 0) B.pb(-v);
+  }
+
+  int maxScore = n;
+  int S = 1 << n;
+  vt<vt<ll>> dp(S, vt<ll>(maxScore+1, 0));
+  dp[0][0] = 1;
+  for(int mask = 0; mask < S; ++mask){
+    int pos = __builtin_popcount(mask);
+    for(int score = 0; score <= maxScore; ++score){
+      ll cur = dp[mask][score];
+      for(int j=0; j< n; j++){
+        if(mask & (1 << j)) continue;
+        int gain =1;
+        if((B[j] > 0) ==(X[pos] > 0) && (abs(B[j]) > abs(X[pos]))){
+          gain = 0;
+        }
+        dp[mask | (1 << j)][score + gain] += cur;
+      }
+    }
+    
+  }
+  cout << dp[S-1][m] << nl;
 }
 
 // ========== Main ==========
@@ -72,6 +107,7 @@ int main() {
 
     int T = 1;
     cin >> T;
+    dbg(T);
     while(T--){
         solve();
     }

@@ -7,8 +7,6 @@ using namespace std;
   #define VEC(v, i) (v.at(i))
   #define MAT(mat, i, j) (mat.at(i).at(j))
 #else
-  #define VEC(v, i) (v[i])
-  #define MAT(mat, i, j) (mat[i][j])
   #define dbg(...)
   #define dbgArr(...)
 #endif
@@ -44,8 +42,6 @@ void signalHandler(int signum) {
     else if (signum == SIGABRT) cerr << "Aborted!\n";
     exit(signum);
 }
-
-// ==========DEFINE OTHER STRUCT/CLASS/VARIABLE ==========
 
 // ========== Solve function ==========
 void solve(){

@@ -7,8 +7,6 @@ using namespace std;
   #define VEC(v, i) (v.at(i))
   #define MAT(mat, i, j) (mat.at(i).at(j))
 #else
-  #define VEC(v, i) (v[i])
-  #define MAT(mat, i, j) (mat[i][j])
   #define dbg(...)
   #define dbgArr(...)
 #endif
@@ -44,12 +42,92 @@ void signalHandler(int signum) {
     else if (signum == SIGABRT) cerr << "Aborted!\n";
     exit(signum);
 }
+struct Edge {
+  int to; ll cap; int rev;
+};
 
-// ==========DEFINE OTHER STRUCT/CLASS/VARIABLE ==========
+struct Dinic{
+  int N;
+  vt<vt<Edge>> G;
+  vt<int> lvl, it;
+  Dinic(int n): N(n), G(n), lvl(n), it(n) {}
+  void add_edge(int u, int v, ll cap){
+    Edge a{v, cap, (int)G[v].size()};
+    Edge b{u, 0, (int)G[u].size()};
+    G[u].pb(a);
+    G[v].pb(b);
+  }
+
+  bool bfs(int s, int t){
+    fill(all(lvl), -1);
+    queue<int> q;
+    lvl[s] = 0;
+    q.push(s);
+    while(!q.empty()){
+      int u = q.front(); q.pop();
+      for(auto &e : G[u]){
+        if(e.cap > 0 && lvl[e.to] < 0){
+          lvl[e.to] = lvl[u] + 1;
+          q.push(e.to);
+        }
+      }
+    }
+    return lvl[t] >= 0;
+  }
+
+  bool dfs(int u, int t, ll f){
+    if(!f || u == t)  return f;
+    for(int &i = it[u]; i< sz(G[u]); ++i){
+      Edge &e = G[u][i];
+      if(e.cap > 0 && lvl[e.to] == lvl[u] + 1){
+        ll d = dfs(e.to, t, min(f, e.cap));
+        if(d > 0){
+          e.cap -= d;
+          G[e.to][e.rev].cap += d;
+          return d;
+        }
+      }
+    }
+    return 0;
+  }
+
+  ll max_flow(int s, int t){
+    ll flow = 0;
+    while(bfs(s,t)){
+      fill(all(it), 0);
+      while(ll f = dfs(s,t, LLONG_MAX)){
+        flow += f;
+      }
+    }
+    return flow;
+  }
+};
 
 // ========== Solve function ==========
 void solve(){
-  
+  int n,m,s,t;
+  cin >> n >> m;
+  vt<int> U(m), V(m), W(m);
+  REP(i,m){
+    cin >> U[i] >> V[i] >> W[i];
+    --U[i];
+    --V[i];
+  }
+  cin >> s >> t;
+  --s; --t;
+  Dinic D(n);
+  ll mult = (ll)m+1;
+  for(int i=0; i<m; ++i){
+    ll cap = W[i]*mult + 1;
+    D.add_edge(U[i], V[i], cap);
+    D.add_edge(V[i], U[i], cap);
+  }
+
+  ll F = D.max_flow(s,t);
+  ll cost = F / mult;
+  ll edges = F % mult;
+
+  cout << cost << nl;
 }
 
 // ========== Main ==========
@@ -62,7 +140,7 @@ int main() {
     #ifdef ON_PC
       #define SHARE_PATH "D:/C++/CP/99.Share/"
       FILE* f1 = freopen(SHARE_PATH "input.txt","r",stdin);
-      freopen(SHARE_PATH "output.txt","w",stdout);
+      FILE* f2 = freopen(SHARE_PATH "output.txt","w",stdout);
       if(!f1){
         cerr<< "Error when open input"<<"\n";
         return 0;
@@ -71,7 +149,7 @@ int main() {
     #endif
 
     int T = 1;
-    cin >> T;
+    // cin >> T;
     while(T--){
         solve();
     }

@@ -7,8 +7,6 @@ using namespace std;
   #define VEC(v, i) (v.at(i))
   #define MAT(mat, i, j) (mat.at(i).at(j))
 #else
-  #define VEC(v, i) (v[i])
-  #define MAT(mat, i, j) (mat[i][j])
   #define dbg(...)
   #define dbgArr(...)
 #endif
@@ -45,11 +43,60 @@ void signalHandler(int signum) {
     exit(signum);
 }
 
-// ==========DEFINE OTHER STRUCT/CLASS/VARIABLE ==========
-
 // ========== Solve function ==========
+int n,m;
+vt<int> d;
 void solve(){
-  
+  cin >> n >> m;
+  d.resize(n);
+  FOR(i,1, n){
+    cin >> d[i];
+  } 
+  //build coordinate x X[i] = khoang cach tu room 1 dem room i
+  vt<ll> X(n+1, 0);
+  FOR(i,1, n+1){
+    X[i+1] = X[i] + d[i];
+  }
+
+  // prefix sum
+  vt<ll> P1(n+1, 0), P2(n+1, 0);
+  FOR(i, 1, n+1){
+    P1[i] = P1[i-1] + X[i];
+    P2[i] = P2[i-1] + 1ll* X[i]*i;
+  }
+
+  auto S = [&](int i, int j){
+    return 2*(P2[j] - P2[i-1]) - 1ll*(i+j)*(P1[j] - P1[i-1]);
+  };
+
+  ll lo = 0;
+  ll hi = S(1,n);
+
+  auto feasible = [&](ll T) -> bool{
+    int l =1;
+    int cnt = 0;
+    while(l <=n){
+      int r = l;
+      while(r<=n && S(l,r) <= T) r++;
+      cnt++;
+      l = r;
+    }
+
+    return cnt <= m;
+  };
+
+  ll ans;
+  while(lo <= hi){
+    ll mid = lo + (hi-lo)/2;
+    if(feasible(mid)){
+      ans = mid;
+      hi = mid-1;
+    }else{
+      lo = mid+1;
+    }
+  }
+  cout << ans << "\n";
+
 }
 
 // ========== Main ==========
@@ -62,7 +109,7 @@ int main() {
     #ifdef ON_PC
       #define SHARE_PATH "D:/C++/CP/99.Share/"
       FILE* f1 = freopen(SHARE_PATH "input.txt","r",stdin);
-      freopen(SHARE_PATH "output.txt","w",stdout);
+      FILE* f2 = freopen(SHARE_PATH "output.txt","w",stdout);
       if(!f1){
         cerr<< "Error when open input"<<"\n";
         return 0;

@@ -7,8 +7,6 @@ using namespace std;
   #define VEC(v, i) (v.at(i))
   #define MAT(mat, i, j) (mat.at(i).at(j))
 #else
-  #define VEC(v, i) (v[i])
-  #define MAT(mat, i, j) (mat[i][j])
   #define dbg(...)
   #define dbgArr(...)
 #endif
@@ -45,12 +43,62 @@ void signalHandler(int signum) {
     exit(signum);
 }
 
-// ==========DEFINE OTHER STRUCT/CLASS/VARIABLE ==========
-
 // ========== Solve function ==========
-void solve(){
-  
+int n,k;
+vt<vt<int>> adj;
+vt<vt<int>> down, up;
+vt<int> parent;
+
+void dfsDown(int u, int p){
+  parent[u] = p;
+  down[u][0] = 1;
+  for(int v : adj[u]){
+    if(v == p) continue;
+    dfsDown(v, u);
+    for(int dist = 1; dist <= k; dist++){
+      down[u][dist] += down[v][dist-1];
+    }
+  }
 }
+
+void dfsUp(int u){
+  for(int v: adj[u]){
+    if(v == parent[u]) continue;
+    up[v][1] +=1; // u is at distance 1 from v
+    for(int d = 2; d <= k; d++){
+      up[v][d] = up[u][d-1] + down[u][d-1] - down[v][d-2];
+    }
+    dfsUp(v);
+  }
+}
+
+void solve(){
+ cin >> n >> k;
+ adj.assign(n, vt<int>());
+ REP(i,n-1){
+   int u,v;
+   cin >> u >> v;
+   u--; v--;
+   adj[u].pb(v);
+   adj[v].pb(u);
+ }
+ down.assign(n, vt<int>(k+1, 0));
+ up.assign(n, vt<int>(k+1, 0));
+ parent.assign(n, -1);
+ dfsDown(0, -1);
+ dfsUp(0);
+
+ int best = 1;
+ for(int u=0; u<n; u++){
+  int total =0;
+  for(int d=0; d<=k; d++){
+    total += down[u][d] + up[u][d];
+  }
+  chmax(best, total);
+ }
+  cout << best << nl;
+}
+
 
 // ========== Main ==========
 int main() {
@@ -62,7 +110,7 @@ int main() {
     #ifdef ON_PC
       #define SHARE_PATH "D:/C++/CP/99.Share/"
       FILE* f1 = freopen(SHARE_PATH "input.txt","r",stdin);
-      freopen(SHARE_PATH "output.txt","w",stdout);
+      FILE* f2 = freopen(SHARE_PATH "output.txt","w",stdout);
       if(!f1){
         cerr<< "Error when open input"<<"\n";
         return 0;
@@ -71,7 +119,7 @@ int main() {
     #endif
 
     int T = 1;
-    cin >> T;
+    // cin >> T;
     while(T--){
         solve();
     }

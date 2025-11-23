@@ -3,15 +3,21 @@ using namespace std;
 
 // ========== Debug ==========
 #ifdef ON_PC
-  #include "lib\debug2.h"
+  #include "lib/debug2.h"
   #define VEC(v, i) (v.at(i))
   #define MAT(mat, i, j) (mat.at(i).at(j))
 #else
-  #define VEC(v, i) (v[i])
-  #define MAT(mat, i, j) (mat[i][j])
   #define dbg(...)
   #define dbgArr(...)
 #endif
+
+// ========== Fast IO initializer ==========
+struct FastIO {
+    FastIO() {
+        ios::sync_with_stdio(false);
+        cin.tie(nullptr);
+    }
+} fastio; // khởi tạo trước main
 
 // ========== Aliases & Macros ==========
 using ll = long long;
@@ -36,17 +42,6 @@ template<typename T> using vt = vector<T>;
 template<class T> inline bool chmin(T& a,const T& b){if(b<a){a=b;return true;}return false;}
 template<class T> inline bool chmax(T& a,const T& b){if(b>a){a=b;return true;}return false;}
 
-//======= SIGNAL HANDLER FOR DEBUGGING ======== 
-void signalHandler(int signum) {
-    cerr << "\nCaught signal: " << signum << endl;
-    // dbg(...); // add relevant variables to debug
-    if (signum == SIGSEGV) cerr << "Segmentation fault detected!\n";
-    else if (signum == SIGABRT) cerr << "Aborted!\n";
-    exit(signum);
-}
-
-// ==========DEFINE OTHER STRUCT/CLASS/VARIABLE ==========
-
 // ========== Solve function ==========
 void solve(){
   
@@ -54,17 +49,12 @@ void solve(){
 
 // ========== Main ==========
 int main() {
-    signal(SIGSEGV, signalHandler);
-    signal(SIGABRT, signalHandler);
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-    
     #ifdef ON_PC
       #define SHARE_PATH "D:/C++/CP/99.Share/"
       FILE* f1 = freopen(SHARE_PATH "input.txt","r",stdin);
-      freopen(SHARE_PATH "output.txt","w",stdout);
+      FILE* f2 = freopen(SHARE_PATH "ans.txt","w",stdout);
       if(!f1){
-        cerr<< "Error when open input"<<"\n";
+        cerr<< "Error when open input file!"<<"\n";
         return 0;
       }
       clock_t start = clock();

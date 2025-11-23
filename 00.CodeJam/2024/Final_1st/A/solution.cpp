@@ -7,8 +7,6 @@ using namespace std;
   #define VEC(v, i) (v.at(i))
   #define MAT(mat, i, j) (mat.at(i).at(j))
 #else
-  #define VEC(v, i) (v[i])
-  #define MAT(mat, i, j) (mat[i][j])
   #define dbg(...)
   #define dbgArr(...)
 #endif
@@ -45,11 +43,59 @@ void signalHandler(int signum) {
     exit(signum);
 }
 
-// ==========DEFINE OTHER STRUCT/CLASS/VARIABLE ==========
+struct Prefix2D {
+  int n;
+  vt<vt<ll>> ps;
+  //ps[i][j] = tổng các phần tử a[r][c] với 0 ≤ r < i và 0 ≤ c < j.
+  Prefix2D(const vt<string>& a){
+    n = sz(a);
+    ps.assign(n+1, vt<ll>(n+1, 0));
+    REP(i, n){
+      REP(j, n){
+        ps[i+1][j+1] = ps[i+1][j] + ps[i][j+1] - ps[i][j] + (a[i][j] - '0');
+      }
+    }
+  }
+
+  ll sum(int r1, int c1, int r2, int c2) const{
+    //tổng các phần tử a[r][c] với r1 ≤ r < r2 và c1 ≤ c < c2.
+    return ps[r2][c2] - ps[r1][c2] - ps[r2][c1] + ps[r1][c1];
+  }
+};
+
+ll eaten(const Prefix2D& P, int r0, int c0, int size){
+  if(size == 1) return 0;
+  ll S = P.sum(r0, c0, r0 + size, c0 + size);
+  int idx = (int)(S%4);
+  int h = size/2;
+  struct Quad{int r,c;};
+  Quad q[4] ={
+    {r0, c0},         //0
+    {r0, c0 + h},     //1
+    {r0 + h, c0},     //2
+    {r0 + h, c0 + h}  //3
+  };
+  ll eaten_here = P.sum(q[idx].r, q[idx].c, q[idx].r + h, q[idx].c + h);
+  ll total = eaten_here;
+  REP(i,4){
+    if(i != idx){
+      total += eaten(P, q[i].r, q[i].c, h);
+    }
+  }
+  return total;
+}
 
 // ========== Solve function ==========
 void solve(){
-  
+  int n;
+  cin >> n;
+  vt<string> a(n);
+  REP(i,n) cin >> a[i];
+  Prefix2D P(a);
+  ll total = P.sum(0,0,n,n);
+  ll eaten_cells = eaten(P, 0, 0, n);
+  cout << total - eaten_cells << nl;
+
 }
 
 // ========== Main ==========

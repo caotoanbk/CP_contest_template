@@ -7,8 +7,6 @@ using namespace std;
   #define VEC(v, i) (v.at(i))
   #define MAT(mat, i, j) (mat.at(i).at(j))
 #else
-  #define VEC(v, i) (v[i])
-  #define MAT(mat, i, j) (mat[i][j])
   #define dbg(...)
   #define dbgArr(...)
 #endif
@@ -45,11 +43,43 @@ void signalHandler(int signum) {
     exit(signum);
 }
 
-// ==========DEFINE OTHER STRUCT/CLASS/VARIABLE ==========
-
 // ========== Solve function ==========
 void solve(){
-  
+  int n,k;
+  if(!(cin >> n >> k)) return;
+  vt<vt<int>> adj(n, vt<int>());
+  REP(i,n-1){
+    int u,v;
+    cin >> u >> v;
+    u--; v--;
+    adj[u].pb(v);
+    adj[v].pb(u);
+  }
+
+
+  vt<int> dist(n);
+  int best = 1;
+  deque<int> q;
+  REP(i,n){
+    fill(all(dist), -1);
+    dist[i] = 0;
+    q.clear();
+    q.pb(i);
+    int cnt = 0;
+    while(!q.empty()){
+      int u = q.front(); q.pop_front();
+      cnt++;
+      if(dist[u] == k) continue;
+      for(auto w : adj[u]){
+        if(dist[w] == -1){
+          dist[w] = dist[u] + 1;
+          q.pb(w);
+        }
+      }
+    }
+    chmax(best, cnt);
+  }
+  cout << best << nl;
 }
 
 // ========== Main ==========
@@ -62,7 +92,7 @@ int main() {
     #ifdef ON_PC
       #define SHARE_PATH "D:/C++/CP/99.Share/"
       FILE* f1 = freopen(SHARE_PATH "input.txt","r",stdin);
-      freopen(SHARE_PATH "output.txt","w",stdout);
+      FILE* f2 = freopen(SHARE_PATH "output.txt","w",stdout);
       if(!f1){
         cerr<< "Error when open input"<<"\n";
         return 0;
@@ -71,7 +101,7 @@ int main() {
     #endif
 
     int T = 1;
-    cin >> T;
+    // cin >> T;
     while(T--){
         solve();
     }
