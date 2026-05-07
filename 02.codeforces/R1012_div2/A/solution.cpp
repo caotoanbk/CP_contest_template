@@ -60,7 +60,13 @@ void signalHandler(int signum) {
 
 // ========== Solve function ==========
 void solve(){
-  
+    int x, y , a; cin >> x >> y >> a;
+    int m = a %(x+y);
+    if(0 <= m&& m < x) {
+      cout << "NO"<<nl;
+    }else {
+      cout <<"YES"<<nl;
+    }
 }
 
 // ========== Main ==========

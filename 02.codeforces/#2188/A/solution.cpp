@@ -60,7 +60,38 @@ void signalHandler(int signum) {
 
 // ========== Solve function ==========
 void solve(){
-  
+  int n; cin >> n;
+  vt<int> a;
+  int total=0;
+  int num1 = n, num2 = 1;
+  while(num1 > num2){
+    a.pb(num1);
+    num1--;
+    a.pb(num2);
+    num2++;
+  }
+  if(num1 == num2) a.pb(num1);
+  reverse(a.begin(), a.end());
+  for(auto &x: a){
+    cout << x << " ";
+  }
+  cout << endl;
+}
+void solve2(){
+  int n; cin >> n;
+  vt<int> a;
+  int l = 1; int r = n;
+  for(int i=0; i<n ;i++){
+    if(i %2 == 0){
+      a.pb(r--);
+    }else{
+      a.pb(l++);
+    }
+  }
+  for(int i=n-1; i>=0; i--){
+    cout << a[i] << " ";
+  }
+  cout << endl;
 }
 
 // ========== Main ==========
@@ -84,7 +115,7 @@ int main() {
     int T = 1;
     cin >> T;
     while(T--){
-        solve();
+        solve2();
     }
 
     #ifdef ON_PC

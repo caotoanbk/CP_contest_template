@@ -60,7 +60,26 @@ void signalHandler(int signum) {
 
 // ========== Solve function ==========
 void solve(){
+  int n,m; 
+  cin >> n >> m;
+  vt<string> g(n);
+  REP(i, n){
+    cin >> g[i];
+  }
   
+  vt<vt<bool>> hasZeroLeft(n, vt<bool>(m, false));
+  vt<vt<bool>> hasZeroUp(n, vt<bool>(m, false));
+  REP(i,n){
+    REP(j,m){
+      hasZeroLeft[i][j] = (j ==0 ? false : hasZeroLeft[i][j-1] || (g[i][j-1] == '0'));
+      hasZeroUp[i][j] = (i ==0 ? false : hasZeroUp[i-1][j] || (g[i-1][j] == '0'));
+      if(g[i][j] == '1' && hasZeroLeft[i][j] && hasZeroUp[i][j]){
+        cout << "NO" << nl;
+        return;
+      }
+    }
+  }
+  cout << "YES" << nl;
 }
 
 // ========== Main ==========

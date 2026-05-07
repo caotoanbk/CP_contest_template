@@ -60,7 +60,15 @@ void signalHandler(int signum) {
 
 // ========== Solve function ==========
 void solve(){
-  
+  int n,k; cin >> n >> k;
+  string s; cin >> s;
+  int cnt = 0;
+  int last_must_stay_awake = -1;
+  FOR(i, 0, n){
+    if(s[i] == '1') last_must_stay_awake = max(last_must_stay_awake, (int)i + k + 1);
+    if(i >= last_must_stay_awake && s[i] == '0') cnt++;
+  }
+  cout << cnt << '\n';
 }
 
 // ========== Main ==========

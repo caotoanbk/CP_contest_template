@@ -60,7 +60,19 @@ void signalHandler(int signum) {
 
 // ========== Solve function ==========
 void solve(){
-  
+ int n; cin >> n;
+ vt<int> a(n),b(n);
+ REP(i,n){cin >> a[i];}
+ REP(i,n){cin >> b[i];}
+ ll ans = 0, mn(0), mx(0), curMn(0), curMx(0);
+ REP(i,n){
+  curMn = min(mn - a[i], b[i] - mx);
+  curMx = max(mx -a[i], b[i] - mn);
+  mn = curMn;
+  mx = curMx;
+ }
+ cout << mx << '\n';
+
 }
 
 // ========== Main ==========

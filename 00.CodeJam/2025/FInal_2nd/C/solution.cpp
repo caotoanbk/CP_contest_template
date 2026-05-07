@@ -12,17 +12,6 @@ using namespace std;
   #define dbg(...)
   #define dbgArr(...)
 #endif
-struct ScopedTimer {
-    const char* name;
-    clock_t t0;
-    ScopedTimer(const char* n): name(n), t0(clock()) {}
-    ~ScopedTimer(){
-        #ifdef ON_PC
-        double ms = double(clock() - t0) / CLOCKS_PER_SEC * 1000.0;
-        cerr << "[Timer] " << name << ": " << ms << " ms\n";
-        #endif
-    }
-};
 
 // ========== Aliases & Macros ==========
 using ll = long long;
@@ -60,7 +49,49 @@ void signalHandler(int signum) {
 
 // ========== Solve function ==========
 void solve(){
-  
+  int n,m;
+  cin >> n >> m;
+  vt<vt<int>> a(n, vt<int>(m,0));
+  for(int i=0; i<n; i++){
+    for(int j=0; j<m; j++){
+      cin >> a[i][j];
+    }
+  }
+
+
+  ll ans = 0;
+  if(n<=m){
+    for(int x1 = 0; x1 <n ; x1++){
+      for(int x2= x1+1; x2<n ; x2++){
+        int cnt[21] = {0};
+        for(int y=0; y<m; y++){
+          int s = a[x1][y] + a[x2][y];
+          cnt[s]++;
+        }
+        for(int t=2; t<=9; t++){
+          ans += 1ll * cnt[t]*cnt[20-t];
+        }
+        ll c10 = cnt[10];
+        ans += c10 * (c10 - 1) / 2;
+      }
+    }
+  }else{
+    for(int y1 = 0; y1 <m ; y1++){
+      for(int y2= y1+1; y2<m ; y2++){
+        int cnt[21] = {0};
+        for(int x=0; x<n; x++){
+          int s = a[x][y1] + a[x][y2];
+          cnt[s]++;
+        }
+        for(int t=2; t<=9; t++){
+          ans += 1ll * cnt[t]*cnt[20-t];
+        }
+        ll c10 = cnt[10];
+        ans += c10 * (c10 - 1) / 2;
+      }
+    }
+  }
+  cout << ans << nl;
 }
 
 // ========== Main ==========
@@ -82,7 +113,7 @@ int main() {
     #endif
 
     int T = 1;
-    cin >> T;
+    // cin >> T;
     while(T--){
         solve();
     }

@@ -60,7 +60,26 @@ void signalHandler(int signum) {
 
 // ========== Solve function ==========
 void solve(){
-  
+  int n; cin >> n;
+  string s; cin >> s;
+  int i=0;
+  int cnt = 0;
+  int ans = 0;
+  while(i < n){
+    if(s[i] == '0'){
+      i++;
+      cnt++;
+    }else{
+      ans++;
+      cnt--;
+      ans += (cnt+2)/3;
+      cnt = 0;
+      i+=2;
+    }
+  }
+  ans += (cnt+2)/3;
+  ans = max(1, ans);
+  cout << ans <<endl;
 }
 
 // ========== Main ==========

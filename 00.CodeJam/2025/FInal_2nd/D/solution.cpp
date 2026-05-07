@@ -12,17 +12,6 @@ using namespace std;
   #define dbg(...)
   #define dbgArr(...)
 #endif
-struct ScopedTimer {
-    const char* name;
-    clock_t t0;
-    ScopedTimer(const char* n): name(n), t0(clock()) {}
-    ~ScopedTimer(){
-        #ifdef ON_PC
-        double ms = double(clock() - t0) / CLOCKS_PER_SEC * 1000.0;
-        cerr << "[Timer] " << name << ": " << ms << " ms\n";
-        #endif
-    }
-};
 
 // ========== Aliases & Macros ==========
 using ll = long long;
@@ -59,7 +48,19 @@ void signalHandler(int signum) {
 // ==========DEFINE OTHER STRUCT/CLASS/VARIABLE ==========
 
 // ========== Solve function ==========
+struct ScopedTimer {
+    const char* name;
+    clock_t t0;
+    ScopedTimer(const char* n): name(n), t0(clock()) {}
+    ~ScopedTimer(){
+        #ifdef ON_PC
+        double ms = double(clock() - t0) / CLOCKS_PER_SEC * 1000.0;
+        cerr << "[Timer] " << name << ": " << ms << " ms\n";
+        #endif
+    }
+};
 void solve(){
+    ScopedTimer tt("solve"); // đo tổng thời gian solve()
   
 }
 
