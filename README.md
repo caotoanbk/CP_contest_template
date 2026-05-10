@@ -54,6 +54,12 @@ Duyệt nhanh danh sách các kỹ thuật này trong đầu:
 2.  **Dynamic Programming (DP):** Kết quả hiện tại có dựa trên các bài toán con nhỏ hơn đã giải không?
 3.  **Two Pointers / Sliding Window:** Thường dùng cho các bài toán trên mảng liên tục.
 4.  **Đồ thị (BFS/DFS/Dijkstra):** Có thể mô hình hóa các trạng thái thành các nút và sự biến đổi thành các cạnh không?
+5.  **Sinh Object Thưa + Block Prefix Sum + Binary Search:** Dùng khi cần tính tổng $\sum_{x=N}^{M} f(x)$ với $N, M$ rất lớn ($\le 10^{18}$), nhưng $f(x)$ là **hàm bậc thang** (piecewise constant) — tức $f(x)$ giữ nguyên giá trị trên từng đoạn $[\text{break}_i, \text{break}_{i+1})$, và các điểm gãy tạo thành một tập **thưa có thể liệt kê được** (thường bằng DFS/đệ quy tổ hợp).
+    *   **Bước 1 — Sinh breakpoints:** Liệt kê toàn bộ các "điểm gãy" bằng DFS, lưu vào mảng rồi sort. Kiểm tra số lượng có chấp nhận được không (thường $\le 10^7$) bằng tổ hợp ($C(d+k, k)$) trước khi code.
+    *   **Bước 2 — Prefix sum trên block:** Mỗi block $[\text{break}_i, \text{break}_{i+1})$ đóng góp $f \cdot \text{len}$ vào tổng. Tính mảng `prefS` theo công thức: `prefS[i+1] = prefS[i] + break[i] % MOD * (break[i+1] - break[i]) % MOD`.
+    *   **Bước 3 — Trả lời query:** `S(x)` = binary search tìm block chứa $x$ → `prefS[i] + break[i] * (x - break[i] + 1)`. Kết quả: `S(M) - S(N-1)`.
+    *   **Lưu ý overflow:** Luôn lấy `% MOD` trước khi nhân; `cnt * val` với `cnt, val` lên tới $10^9$ và $10^{18}$ sẽ overflow `long long`.
+    *   **Ví dụ:** [LG CodeJam 27928 - Monotone Increasing Number](https://codejam.lge.com/problem/27928) — $f(x)$ = số monotone lớn nhất $\le x$, số breakpoints $\approx 4.7 \times 10^6$.
 
 ---
 
@@ -123,6 +129,7 @@ Khi làm việc với lưới (Grid) hoặc ma trận, tích $R \cdot C$ chính 
 | $R \cdot C \le 10^6$ | $O(R \cdot C \cdot \log(\dots))$ | Dijkstra trên lưới, Cây phân đoạn 2D (2D Segment Tree). |
 | $R, C \le 10^9$ | $O(K \log K)$ | Nếu chỉ có $K$ điểm đặc biệt trên lưới: Nén tọa độ (Coordinate Compression). |
 | $R \le 100, C \le 10^{18}$ | $O(R^3 \log C)$ | Nhân ma trận (Matrix Exponentiation) để tăng tốc DP. |
+| $R, C \le 100$, $N \le \min(10, R+C-1)$ | $O(N \cdot R \cdot C \cdot (R+C))$ | **DP Cắt tuần tự + 2D Prefix Sum** (xem kỹ thuật 5 bên dưới). |
 
 #### Các kỹ thuật "phải biết" với Ma trận:
 1.  **Mảng cộng dồn 2D (2D Prefix Sum):**
@@ -134,10 +141,21 @@ Khi làm việc với lưới (Grid) hoặc ma trận, tích $R \cdot C$ chính 
     *   Khi cần lưu ma trận vào các cấu trúc dữ liệu 1D (như Disjoint Set Union), hãy chuyển tọa độ $(r, c)$ thành một số nguyên duy nhất: `index = r * C + c`.
 4.  **Tối ưu bộ nhớ:**
     *   Nếu $R \cdot C$ lớn nhưng chỉ cần thông tin của hàng trước đó (trong DP), hãy sử dụng **Mảng lăn (Rolling Array)** với 2 hàng để tiết kiệm bộ nhớ từ $O(R \cdot C)$ xuống $O(C)$.
+5.  **DP Cắt tuần tự (Sequential Cut DP):**
+    *   **Nhận dạng:** Bài toán chia một hình chữ nhật thành $N$ phần theo thứ tự bằng những nhát cắt ngang/dọc xuyên suốt. Mỗi nhát cho đi phần trên/trái, phần dưới/phải tiếp tục được cắt. $N$ nhỏ ($N \le 10$).
+    *   **Quan sát chìa khóa:** Sau mỗi nhát cắt, phần "còn lại" luôn là một hình chữ nhật **suffix góc dưới-phải cố định** $[r..R{-}1] \times [c..C{-}1]$. Vì cắt ngang chỉ làm tăng $r$, cắt dọc chỉ làm tăng $c$, góc $(R{-}1, C{-}1)$ không đổi. Đây là lý do không gian trạng thái co lại đáng kể.
+    *   **State:** `dp(i, r, c)` = số cách hợp lệ để xử lý bạn $i$ đến $N{-}1$ khi phần bánh còn lại là $[r..R{-}1] \times [c..C{-}1]$.
+    *   **Chuyển trạng thái:**
+        *   Cắt ngang tại hàng $k$ ($r \le k < R{-}1$): bạn $i$ nhận $[r..k] \times [c..C{-}1]$. Nếu thỏa điều kiện → cộng `dp(i+1, k+1, c)`.
+        *   Cắt dọc tại cột $k$ ($c \le k < C{-}1$): bạn $i$ nhận $[r..R{-}1] \times [c..k]$. Nếu thỏa điều kiện → cộng `dp(i+1, r, k+1)`.
+    *   **Kiểm tra điều kiện:** Dùng **2D Prefix Sum** để đếm số quả trong mỗi hình chữ nhật con trong $O(1)$.
+    *   **Độ phức tạp:** $O(N \times R \times C \times (R + C))$ — với $N \le 10$, $R, C \le 100$: khoảng 20 triệu phép tính/test → chạy được.
+    *   **Ví dụ bài:** [BOJ 25218 - Cutting Cake](https://codejam.lge.com/problem/25218).
 
 #### Dấu hiệu nhận biết:
 *   **Nếu $R$ rất nhỏ ($R \le 10$) nhưng $C$ rất lớn:** Hãy nghĩ ngay đến **DP Bitmask** trên cột hoặc **Nhân ma trận**.
 *   **Nếu bài toán yêu cầu tìm hình chữ nhật lớn nhất:** Nghĩ đến kỹ thuật **Stack** (tương tự bài tìm hình chữ nhật lớn nhất trong biểu đồ).
+*   **Nếu $N$ nhỏ ($\le 10$) và bài yêu cầu chia lưới thành $N$ phần theo thứ tự bằng nhát cắt xuyên suốt:** Nghĩ ngay đến **DP Cắt tuần tự + 2D Prefix Sum** — state là `(bạn_thứ_i, hàng_bắt_đầu, cột_bắt_đầu)`.
 ### 7.5. Trường hợp hỗn hợp: Ma trận ($R \times C$) và $N$ vật thể/điểm đặc biệt
 
 Đây là dạng bài "đánh lừa" cảm giác về độ phức tạp. Chìa khóa là xác định xem thuật toán sẽ chạy dựa trên **diện tích lưới** ($R \cdot C$) hay dựa trên **số lượng điểm** ($N$).
